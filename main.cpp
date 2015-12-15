@@ -1,12 +1,15 @@
 #include <avr/io.h>
 #include "ev/interrupt.hpp"
+#include "port.hpp"
+
+typedef Pin<B, 0> led;
 
 static void led_on();
 static void led_off();
 
 static void led_on()
 {
-	PORTB &= ~_BV(0);
+	led::low();
 	TIM0Interrupt::enqueue(led_off);
 	TIM0Interrupt::loop();
 	WDTInterrupt::enqueue(led_on);
@@ -18,7 +21,7 @@ static void led_off()
 	if (++counter < 3) {
 		TIM0Interrupt::enqueue(led_off);
 	} else {
-		PORTB |= _BV(0);
+		led::high();
 		counter = 0;
 	}
 }
@@ -29,8 +32,8 @@ int main()
 	ACSR = _BV(ACD);
 	DIDR0 = _BV(AIN1D) | _BV(AIN0D);
 
-	DDRB |= _BV(PB0);
-	PORTB = 0xff;
+	led::mode(OUTPUT);
+	led::high();
 
 	WDTCR = _BV(WDP3);
 	TCCR0B = _BV(CS01);
