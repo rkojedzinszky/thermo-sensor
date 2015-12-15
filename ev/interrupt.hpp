@@ -27,6 +27,7 @@ private:
 	static Callback queued_;
 	static Callback pending_;
 
+	static void _enqueue(void (*f)());
 	static void _loop();
 };
 

@@ -2,9 +2,15 @@
 #include "interrupt_impl.hpp"
 
 template <>
+void TIM0Interrupt::enqueue(void (*f)())
+{
+	_enqueue(f);
+	TIMSK |= _BV(TOIE0);
+}
+
+template <>
 void TIM0Interrupt::loop()
 {
-	TIMSK |= _BV(TOIE0);
 	_loop();
 	TIMSK &= ~_BV(TOIE0);
 }

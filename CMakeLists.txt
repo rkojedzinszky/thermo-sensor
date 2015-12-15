@@ -20,3 +20,7 @@ add_subdirectory(ev)
 add_executable(main main.cpp)
 
 target_link_libraries(main ev)
+
+add_custom_target(flash
+	avrdude -c usbasp -p t85 -B 5 -U flash:w:main
+	DEPENDS main)
