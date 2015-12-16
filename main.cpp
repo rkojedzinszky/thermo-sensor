@@ -9,7 +9,7 @@ typedef AM2302< Pin<B, 2> > Tsensor1;
 
 static void led_off()
 {
-	led::high();
+	led::set();
 }
 
 static void write_eeprom(int addr, unsigned char value)
@@ -31,10 +31,10 @@ static void read_temp()
 	short temp, hum;
 
 	if (!Tsensor1::read(hum, temp)) {
-		led2::low();
+		led2::clear();
 		temp = hum = 0x5a5a;
 	} else {
-		led2::high();
+		led2::set();
 	}
 
 	if (addr >= 512) {
@@ -45,20 +45,23 @@ static void read_temp()
 	write_eeprom(addr++, (temp & 0xff));
 	write_eeprom(addr++, (hum >> 8));
 	write_eeprom(addr++, (hum & 0xff));
+
+	write_eeprom(addr, 0xff);
+	write_eeprom(addr+1, 0xff);
 }
 
 static void schedule()
 {
-	static char secs = 1;
+	static short secs = 0;
 
-	led::low();
+	led::clear();
 
-	if (--secs == 0) {
+	if (++secs == 600) {
 		read_temp();
-		secs = 10;
+		secs = 0;
 	}
 
-	led::high();
+	led::set();
 
 	WDTInterrupt::enqueue(schedule);
 }
@@ -81,10 +84,10 @@ int main()
 	DIDR0 = _BV(AIN1D) | _BV(AIN0D);
 
 	led::mode(OUTPUT);
-	led::high();
+	led::set();
 
 	led2::mode(OUTPUT);
-	led2::high();
+	led2::set();
 
 	WDTCR = _BV(WDP2) | _BV(WDP1);
 	TCCR0B = _BV(CS01);

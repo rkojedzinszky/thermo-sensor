@@ -48,21 +48,21 @@ public:
 	}
 
 	// set high
-	static void high() {
+	static void set() {
 		Port<P>::port() |= _BV(pin);
 	}
 
 	// set low
-	static void low() {
+	static void clear() {
 		Port<P>::port() &= ~_BV(pin);
 	}
 
 	// write PORT
 	static void output(char v) {
 		if (v) {
-			high();
+			set();
 		} else {
-			low();
+			clear();
 		}
 	}
 
@@ -73,6 +73,20 @@ public:
 		} else {
 			Port<P>::ddr() &= ~_BV(pin);
 		}
+	}
+
+	// from sfr_defs
+	static bool is_set() {
+		return bit_is_set(Port<P>::pin(), pin);
+	}
+	static bool is_clear() {
+		return bit_is_clear(Port<P>::pin(), pin);
+	}
+	static void loop_until_set() {
+		loop_until_bit_is_set(Port<P>::pin(), pin);
+	}
+	static void loop_until_clear() {
+		loop_until_bit_is_clear(Port<P>::pin(), pin);
 	}
 };
 

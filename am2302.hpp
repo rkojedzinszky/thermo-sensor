@@ -14,34 +14,27 @@ private:
 };
 
 template <class Pin>
-bool AM2302<Pin>::read(short& humidity, short& temperature)
+inline bool AM2302<Pin>::read(short& humidity, short& temperature)
 {
 	unsigned char d[5];
 
 	Pin::mode(OUTPUT);
-	Pin::low();
-
+	Pin::clear();
 	_delay_ms(1);
-
-	Pin::high();
+	Pin::set();
 	_delay_us(30);
-
-	Pin::low();
-
+	Pin::clear();
 	Pin::mode(INPUT);
-	Pin::high(); // pull-up
-
+	Pin::set(); // pull-up
 	_delay_us(40);
-
-	while (Pin::value() == 0) { }
-
-	while (Pin::value() != 0) { }
+	Pin::loop_until_set();
+	Pin::loop_until_clear();
 
 	for (char i = 0; i < 5; ++i) {
 		d[i] = read8();
 	}
 
-	while (Pin::value() == 0) { }
+	Pin::loop_until_set();
 
 	humidity = (d[0] << 8) | d[1];
 	temperature = ((d[2] & 0x7f) << 8) | d[3];
@@ -57,18 +50,18 @@ bool AM2302<Pin>::read(short& humidity, short& temperature)
 }
 
 template <class Pin>
-unsigned char AM2302<Pin>::read8()
+inline unsigned char AM2302<Pin>::read8()
 {
 	unsigned char r;
 
 	for (char i = 0; i < 8; ++i) {
 		r <<= 1;
-		while (Pin::value() == 0) { }
+		Pin::loop_until_set();
 		_delay_us(30);
-		if (Pin::value() != 0) {
+		if (Pin::is_set()) {
 			r |= 1;
 		}
-		while (Pin::value() != 0) { }
+		Pin::loop_until_clear();
 	}
 
 	return r;
