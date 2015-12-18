@@ -21,7 +21,7 @@ void WDTInterrupt::sleep()
 	set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 	sleep_mode();
 
-	if (WDTCR & _BV(WDIF)) {
+	if (bit_is_set(WDTCR, WDIF)) {
 		tick();
 		WDTCR &= ~_BV(WDIF);
 	}

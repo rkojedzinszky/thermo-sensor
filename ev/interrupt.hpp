@@ -33,3 +33,4 @@ private:
 
 typedef class Interrupt<WDT_vect_num> WDTInterrupt;
 typedef class Interrupt<TIM0_OVF_vect_num> TIM0Interrupt;
+typedef class Interrupt<ADC_vect_num> ADCInterrupt;

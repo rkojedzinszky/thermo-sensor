@@ -21,7 +21,7 @@ void TIM0Interrupt::sleep()
 	set_sleep_mode(SLEEP_MODE_IDLE);
 	sleep_mode();
 
-	if (TIFR & _BV(TOV0)) {
+	if (bit_is_set(TIFR, TOV0)) {
 		tick();
 		TIFR &= ~_BV(TOV0);
 	}
