@@ -3,9 +3,9 @@
 #include "port.hpp"
 #include "am2302.hpp"
 
-typedef Pin<B, 1> led;
-typedef Pin<B, 0> led2;
-typedef AM2302< Pin<B, 4> > Tsensor1;
+typedef Pin<Port<B>, 1> led;
+typedef Pin<Port<B>, 0> led2;
+typedef AM2302< Pin<Port<B>, 4> > Tsensor1;
 
 static void write_eeprom(int addr, unsigned char value)
 {

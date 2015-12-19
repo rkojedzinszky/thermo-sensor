@@ -39,22 +39,22 @@ enum PinMode {
 	OUTPUT
 };
 
-template <PortId P, int pin>
+template <class Port, int pin>
 class Pin {
 public:
 	// reads PIN
 	static char value() {
-		return Port<P>::pin() & _BV(pin);
+		return Port::pin() & _BV(pin);
 	}
 
 	// set high
 	static void set() {
-		Port<P>::port() |= _BV(pin);
+		Port::port() |= _BV(pin);
 	}
 
 	// set low
 	static void clear() {
-		Port<P>::port() &= ~_BV(pin);
+		Port::port() &= ~_BV(pin);
 	}
 
 	// write PORT
@@ -69,24 +69,24 @@ public:
 	// write DDR
 	static void mode(PinMode mode) {
 		if (mode == OUTPUT) {
-			Port<P>::ddr() |= _BV(pin);
+			Port::ddr() |= _BV(pin);
 		} else {
-			Port<P>::ddr() &= ~_BV(pin);
+			Port::ddr() &= ~_BV(pin);
 		}
 	}
 
 	// from sfr_defs
 	static bool is_set() {
-		return bit_is_set(Port<P>::pin(), pin);
+		return bit_is_set(Port::pin(), pin);
 	}
 	static bool is_clear() {
-		return bit_is_clear(Port<P>::pin(), pin);
+		return bit_is_clear(Port::pin(), pin);
 	}
 	static void loop_until_set() {
-		loop_until_bit_is_set(Port<P>::pin(), pin);
+		loop_until_bit_is_set(Port::pin(), pin);
 	}
 	static void loop_until_clear() {
-		loop_until_bit_is_clear(Port<P>::pin(), pin);
+		loop_until_bit_is_clear(Port::pin(), pin);
 	}
 	static bool loop_until_set(unsigned char timeout_us) {
 		asm volatile(
@@ -96,7 +96,7 @@ public:
 				"brne 1b\n"
 				"2:\n"
 				: "=r" (timeout_us)
-				: "0" (timeout_us / 5), "i" (_SFR_IO_ADDR(Port<B>::pin())), "i" (pin)
+				: "0" (timeout_us / 5), "i" (_SFR_IO_ADDR(Port::pin())), "i" (pin)
 			    );
 		return timeout_us != 0;
 	}
@@ -108,7 +108,7 @@ public:
 				"brne 1b\n"
 				"2:\n"
 				: "=r" (timeout_us)
-				: "0" (timeout_us / 5), "i" (_SFR_IO_ADDR(Port<B>::pin())), "i" (pin)
+				: "0" (timeout_us / 5), "i" (_SFR_IO_ADDR(Port::pin())), "i" (pin)
 			    );
 		return timeout_us != 0;
 	}
