@@ -15,7 +15,7 @@ void radio_reset()
 	radio::set<radio::FREQ0>(0x63);
 
 	// modulation
-	radio::set<radio::MDMCFG2>(0x12);
+	radio::set<radio::MDMCFG2>(0x1a);
 
 	// calibration
 	radio::set<radio::FSCAL3>(0xea);
