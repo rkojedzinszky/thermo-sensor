@@ -2,6 +2,7 @@
 
 #include <avr/io.h>
 #include <avr/sleep.h>
+#include <interrupt/ADC.hpp>
 
 class VCC_tnx5 {
 public:
@@ -18,11 +19,16 @@ public:
 	}
 
 	int read_voltage() {
+		done_ = false;
+		ADCInterrupt::set(interrupt);
 		ADCSRA |= _BV(ADIE);
-		set_sleep_mode(SLEEP_MODE_ADC);
-		sleep_mode();
-		loop_until_bit_is_clear(ADCSRA, ADSC);
+		while (!done_) {
+			set_sleep_mode(SLEEP_MODE_ADC);
+			sleep_mode();
+			ADCInterrupt::pending();
+		}
 		ADCSRA &= ~_BV(ADIE);
+		ADCInterrupt::clear();
 
 		if (ADC > 0) {
 			return (1023L * 1100L / ADC);
@@ -30,4 +36,7 @@ public:
 
 		return -1;
 	}
+private:
+	static void interrupt();
+	static bool done_;
 };

@@ -1,11 +1,13 @@
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/wdt.h>
 #define F_CPU 1000000L
 #include <util/delay.h>
-#include "ev/interrupt.hpp"
 #include <common.hpp>
 #include <am2302.hpp>
 #include <sensor.hpp>
 #include <vcc.hpp>
+#include <interrupt/WDT.hpp>
 
 typedef AM2302< Pin<Port<B>, 4> > Tsensor1;
 
@@ -20,10 +22,6 @@ static unsigned char read_eeprom(int addr)
 	EECR |= _BV(EERE);
 
 	return EEDR;
-}
-
-ISR(ADC_vect)
-{
 }
 
 void send()
@@ -67,8 +65,8 @@ static void radio_off()
 	radio::wcmd<radio::SPWD>();
 	radio::release();
 
-	WDTCR = _BV(WDP3) | _BV(WDP0);
-	WDTInterrupt::enqueue(loop);
+	WDTCR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0);
+	WDTInterrupt::set(loop);
 }
 
 static void loop()
@@ -80,16 +78,13 @@ static void loop()
 	if (counter == 3) {
 		short thum, ttemp;
 		Tsensor1::read(thum, ttemp);
-
-		WDTCR = _BV(WDP3);
-		WDTInterrupt::enqueue(loop);
+		WDTCR = _BV(WDIE) | _BV(WDP3);
 	} else if (counter == 4) {
 		counter = 0;
 		send();
-		WDTCR = 0;
-		WDTInterrupt::enqueue(radio_off);
-	} else {
-		WDTInterrupt::enqueue(loop);
+		wdt_reset();
+		WDTCR = _BV(WDIE);
+		WDTInterrupt::set(radio_off);
 	}
 }
 
@@ -103,5 +98,10 @@ int main()
 	sei();
 
 	radio_off();
-	WDTInterrupt::loop();
+
+	for (;;) {
+		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		sleep_mode();
+		WDTInterrupt::pending();
+	}
 }

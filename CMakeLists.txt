@@ -17,12 +17,11 @@ set(MCU "attiny85")
 set(CMAKE_C_FLAGS "-O2 -mmcu=${MCU}")
 set(CMAKE_CXX_FLAGS "-O2 -mmcu=${MCU} -std=c++11")
 
-add_subdirectory(ev)
+add_subdirectory(interrupt)
 add_subdirectory(spi)
 
-add_executable(main main.cpp)
-
-target_link_libraries(main ev spi_tx5)
+# add_executable(main main.cpp)
+# target_link_libraries(main spi_tx5)
 
 add_custom_target(flash
 	avrdude -c usbasp -p t85 -B 5 -U flash:w:main
@@ -32,13 +31,12 @@ add_library(common STATIC common.cpp)
 
 target_link_libraries(common spi_tx5)
 
-add_executable(sensor sensor.cpp)
+add_executable(sensor sensor.cpp vcc_tnx5.cpp)
 
-target_link_libraries(sensor ev common)
+target_link_libraries(sensor common interrupt)
 
 add_executable(receiver receiver.cpp)
 
 target_link_libraries(receiver common)
 
 add_executable(tl tl.cpp)
-# target_link_libraries(tl ev)
