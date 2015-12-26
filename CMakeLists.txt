@@ -37,6 +37,6 @@ target_link_libraries(sensor common interrupt)
 
 add_executable(receiver receiver.cpp)
 
-target_link_libraries(receiver common)
+target_link_libraries(receiver common interrupt)
 
 add_executable(tl tl.cpp)

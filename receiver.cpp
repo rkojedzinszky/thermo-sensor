@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
+#include <interrupt/PCINT0.hpp>
 #include <common.hpp>
 #include <port.hpp>
 
@@ -21,23 +22,17 @@ static void write_eeprom(int addr, unsigned char value)
 
 static unsigned int eeprom_addr = 0;
 
-ISR(PCINT0_vect)
-{
-}
-
 static void receive()
 {
-	if (GDO0::is_clear()) {
-		return;
-	}
-
-	radio::select();
-	unsigned char rxbytes = radio::status<radio::RXBYTES>();
-	unsigned char d[rxbytes];
-	radio::read_rxfifo(d, rxbytes);
-	if (rxbytes <= 32) {
-		for (int i = 0; i < rxbytes; ++i) {
-			write_eeprom(eeprom_addr++, d[i]);
+	while (GDO0::is_set()) {
+		radio::select();
+		unsigned char rxbytes = radio::status<radio::RXBYTES>();
+		unsigned char d[rxbytes];
+		radio::read_rxfifo(d, rxbytes);
+		if (rxbytes <= 32) {
+			for (int i = 0; i < rxbytes; ++i) {
+				write_eeprom(eeprom_addr++, d[i]);
+			}
 		}
 	}
 }
@@ -47,11 +42,12 @@ static void receive_loop()
 	radio::select();
 	radio::wcmd<radio::SRX>();
 	radio::release();
+	PCINT0Interrupt::set(receive);
 
 	while(1) {
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
-		receive();
+		PCINT0Interrupt::pending();
 	}
 }
 
