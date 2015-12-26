@@ -27,3 +27,18 @@ target_link_libraries(main ev spi_tx5)
 add_custom_target(flash
 	avrdude -c usbasp -p t85 -B 5 -U flash:w:main
 	DEPENDS main)
+
+add_library(common STATIC common.cpp)
+
+target_link_libraries(common spi_tx5)
+
+add_executable(sensor sensor.cpp)
+
+target_link_libraries(sensor ev common)
+
+add_executable(receiver receiver.cpp)
+
+target_link_libraries(receiver common)
+
+add_executable(tl tl.cpp)
+# target_link_libraries(tl ev)

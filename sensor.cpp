@@ -4,6 +4,8 @@
 #include "ev/interrupt.hpp"
 #include <common.hpp>
 #include <am2302.hpp>
+#include <sensor.hpp>
+#include <vcc.hpp>
 
 typedef AM2302< Pin<Port<B>, 4> > Tsensor1;
 
@@ -20,26 +22,38 @@ static unsigned char read_eeprom(int addr)
 	return EEDR;
 }
 
-static void send()
+ISR(ADC_vect)
+{
+}
+
+void send()
 {
 	union {
 		struct {
 			unsigned char len;
-			unsigned char id_;
-			short humidity, temperature;
-		} data;
-		unsigned char raw[0];
+			unsigned char id;
+			unsigned char data[0];
+		};
+		unsigned char raw[16];
 	} data;
 
-	if (!Tsensor1::read(data.data.humidity, data.data.temperature)) {
-		return;
+	VCC vccreader;
+	unsigned char* dp = data.data;
+
+	short hum, temp;
+	if (Tsensor1::read(hum, temp)) {
+		dp += SensorValue<Humidity>::encode(hum, dp);
+		dp += SensorValue<Temperature>::encode(temp, dp);
 	}
 
-	data.data.id_ = id;
-	data.data.len = sizeof(data) - 1;
+	int voltage = vccreader.read_voltage();
+	dp += SensorValue<Power>::encode(voltage, dp);
+
+	data.len = dp - data.data + 1;
+	data.id = id;
 
 	radio::select();
-	radio::write_txfifo(data.raw, sizeof(data));
+	radio::write_txfifo(data.raw, data.len + 1);
 	radio::select();
 	radio::wcmd<radio::STX>();
 	radio::release();
@@ -72,7 +86,7 @@ static void loop()
 	} else if (counter == 4) {
 		counter = 0;
 		send();
-		WDTCR = _BV(WDP1);
+		WDTCR = 0;
 		WDTInterrupt::enqueue(radio_off);
 	} else {
 		WDTInterrupt::enqueue(loop);

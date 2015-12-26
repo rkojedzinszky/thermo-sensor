@@ -6,17 +6,17 @@
 class SPI_tx5 {
 public:
 	static void setup() {
-		MOSI::mode(OUTPUT);
-		MISO::mode(INPUT);
-		SCK::mode(OUTPUT);
-		SCK::clear();
-		USICR = _BV(USIWM0);
+		DI::mode(INPUT);
+		DO::mode(OUTPUT);
+		USCK::mode(OUTPUT);
+		USCK::clear();
 	}
 
 	static unsigned char xmit(unsigned char);
 private:
 	typedef ::Port<B> Port;
-	typedef Pin<Port, 0> MOSI;
-	typedef Pin<Port, 1> MISO;
-	typedef Pin<Port, 2> SCK;
+public:
+	typedef Pin<Port, 0> DI;
+	typedef Pin<Port, 1> DO;
+	typedef Pin<Port, 2> USCK;
 };
