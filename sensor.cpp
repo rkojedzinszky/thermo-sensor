@@ -69,17 +69,19 @@ static void radio_off()
 	WDTInterrupt::set(loop);
 }
 
+#define P_TIMEOUTS 3
+
 static void loop()
 {
 	static unsigned char counter = 0;
 
 	counter++;
 
-	if (counter == 3) {
+	if (counter == P_TIMEOUTS) {
 		short thum, ttemp;
 		Tsensor1::read(thum, ttemp);
 		WDTCR = _BV(WDIE) | _BV(WDP3);
-	} else if (counter == 4) {
+	} else if (counter == P_TIMEOUTS+1) {
 		counter = 0;
 		send();
 		wdt_reset();
