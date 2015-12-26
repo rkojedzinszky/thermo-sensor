@@ -44,10 +44,11 @@ static void receive()
 
 static void receive_loop()
 {
+	radio::select();
+	radio::wcmd<radio::SRX>();
+	radio::release();
+
 	while(1) {
-		radio::select();
-		radio::wcmd<radio::SRX>();
-		radio::release();
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
 		receive();
