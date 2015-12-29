@@ -5,7 +5,7 @@
 #include <common.hpp>
 #include <port.hpp>
 
-typedef Pin<Port<B>, 4> GDO0;
+typedef Pin<Port<A>, 3> GDO0;
 
 static void write_eeprom(int addr, unsigned char value)
 {
@@ -64,7 +64,7 @@ int main()
 	radio::release();
 
 	GIMSK |= _BV(PCIE0);
-	PCMSK |= _BV(PCINT4);
+	PCMSK0 |= _BV(PCINT3);
 
 	sei();
 
