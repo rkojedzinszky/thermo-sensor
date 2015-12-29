@@ -8,8 +8,11 @@
 #include <sensor.hpp>
 #include <vcc.hpp>
 #include <interrupt/WATCHDOG.hpp>
+#include <interrupt/PCINT0.hpp>
 
 typedef AM2302< Pin<Port<B>, 1> > Tsensor1;
+typedef Pin<Port<A>, 3> GDO0;
+typedef Pin<Port<B>, 0> LED;
 
 unsigned char id;
 
@@ -61,12 +64,17 @@ static void loop();
 
 static void radio_off()
 {
+	GIMSK &= ~_BV(PCIE0);
+
 	radio::select();
 	radio::wcmd<radio::SPWD>();
 	radio::release();
 
+	wdt_reset();
 	WDTCSR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0);
 	WATCHDOGInterrupt::set(loop);
+
+	LED::clear();
 }
 
 #define P_TIMEOUTS 3
@@ -82,11 +90,17 @@ static void loop()
 		Tsensor1::read(thum, ttemp);
 		WDTCSR = _BV(WDIE) | _BV(WDP3);
 	} else if (counter == P_TIMEOUTS+1) {
+		LED::set();
 		counter = 0;
 		send();
-		wdt_reset();
-		WDTCSR = _BV(WDIE);
+		WDTCSR = _BV(WDP2) | _BV(WDP0) | _BV(WDIE);
 		WATCHDOGInterrupt::set(radio_off);
+
+		GIMSK |= _BV(PCIE0);
+
+		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		sleep_mode();
+		PCINT0Interrupt::pending();
 	}
 }
 
@@ -96,8 +110,16 @@ int main()
 
 	radio::setup();
 	radio_reset();
+	radio::select();
+	radio::set<radio::IOCFG0>(0x06);
+	radio::release();
+
+	LED::mode(OUTPUT);
 
 	sei();
+
+	PCMSK0 |= _BV(PCINT3);
+	PCINT0Interrupt::set(radio_off);
 
 	radio_off();
 
