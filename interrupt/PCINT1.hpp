@@ -3,4 +3,4 @@
 #include <avr/io.h>
 #include <interrupt/base>
 
-typedef Interrupt<TIM0_OVF_vect_num> TIM0_OVFInterrupt;
+typedef Interrupt<PCINT1_vect_num> PCINT1Interrupt;

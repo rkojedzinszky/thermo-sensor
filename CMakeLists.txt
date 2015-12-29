@@ -12,7 +12,7 @@ set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
 
 include_directories("${CMAKE_SOURCE_DIR}")
 
-set(MCU "attiny85")
+set(MCU "attiny84a")
 
 set(CMAKE_C_FLAGS "-O2 -mmcu=${MCU}")
 set(CMAKE_CXX_FLAGS "-O2 -mmcu=${MCU} -std=c++11")
@@ -29,9 +29,9 @@ add_custom_target(flash
 
 add_library(common STATIC common.cpp)
 
-target_link_libraries(common spi_tx5)
+target_link_libraries(common spi)
 
-add_executable(sensor sensor.cpp vcc_tnx5.cpp)
+add_executable(sensor sensor.cpp vcc_tn84a.cpp)
 
 target_link_libraries(sensor common interrupt)
 

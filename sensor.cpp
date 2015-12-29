@@ -7,9 +7,9 @@
 #include <am2302.hpp>
 #include <sensor.hpp>
 #include <vcc.hpp>
-#include <interrupt/WDT.hpp>
+#include <interrupt/WATCHDOG.hpp>
 
-typedef AM2302< Pin<Port<B>, 4> > Tsensor1;
+typedef AM2302< Pin<Port<B>, 1> > Tsensor1;
 
 unsigned char id;
 
@@ -65,8 +65,8 @@ static void radio_off()
 	radio::wcmd<radio::SPWD>();
 	radio::release();
 
-	WDTCR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0);
-	WDTInterrupt::set(loop);
+	WDTCSR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0);
+	WATCHDOGInterrupt::set(loop);
 }
 
 #define P_TIMEOUTS 3
@@ -80,13 +80,13 @@ static void loop()
 	if (counter == P_TIMEOUTS) {
 		short thum, ttemp;
 		Tsensor1::read(thum, ttemp);
-		WDTCR = _BV(WDIE) | _BV(WDP3);
+		WDTCSR = _BV(WDIE) | _BV(WDP3);
 	} else if (counter == P_TIMEOUTS+1) {
 		counter = 0;
 		send();
 		wdt_reset();
-		WDTCR = _BV(WDIE);
-		WDTInterrupt::set(radio_off);
+		WDTCSR = _BV(WDIE);
+		WATCHDOGInterrupt::set(radio_off);
 	}
 }
 
@@ -104,6 +104,6 @@ int main()
 	for (;;) {
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
-		WDTInterrupt::pending();
+		WATCHDOGInterrupt::pending();
 	}
 }

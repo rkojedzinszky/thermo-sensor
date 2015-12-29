@@ -1,6 +1,6 @@
 #pragma once
 
 #include <avr/io.h>
-#include <interrupt/base.hpp>
+#include <interrupt/base>
 
 typedef Interrupt<EE_RDY_vect_num> EE_RDYInterrupt;

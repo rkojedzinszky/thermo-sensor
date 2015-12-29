@@ -35,6 +35,7 @@ static void receive()
 			}
 		}
 	}
+	write_eeprom(eeprom_addr, 0xff);
 }
 
 static void receive_loop()
@@ -62,7 +63,7 @@ int main()
 	radio::set<radio::IOCFG0>(0x7);
 	radio::release();
 
-	GIMSK |= _BV(PCIE);
+	GIMSK |= _BV(PCIE0);
 	PCMSK |= _BV(PCINT4);
 
 	sei();
