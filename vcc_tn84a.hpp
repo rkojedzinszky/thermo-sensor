@@ -9,7 +9,7 @@ public:
 	VCC_tn84a() {
 		PRR &= ~_BV(PRADC);
 		ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS0);
-		ADMUX = _BV(MUX3) | _BV(MUX2);
+		ADMUX = _BV(MUX5) | _BV(MUX0);
 
 	}
 
