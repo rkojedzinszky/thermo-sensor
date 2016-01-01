@@ -4,6 +4,7 @@
 #include <interrupt/PCINT0.hpp>
 #include <common.hpp>
 #include <port.hpp>
+#include <sensor.hpp>
 
 typedef Pin<Port<A>, 3> GDO0;
 
@@ -22,6 +23,11 @@ static void write_eeprom(int addr, unsigned char value)
 
 static unsigned int eeprom_addr = 0;
 
+static void mark_eeprom_eof()
+{
+	write_eeprom(eeprom_addr, 0xff);
+}
+
 static void receive()
 {
 	while (GDO0::is_set()) {
@@ -29,13 +35,15 @@ static void receive()
 		unsigned char rxbytes = radio::status<radio::RXBYTES>();
 		unsigned char d[rxbytes];
 		radio::read_rxfifo(d, rxbytes);
-		if (rxbytes <= 32) {
+		if (rxbytes >= 2 && rxbytes <= 32 && rxbytes == d[0] + 3) {
+			SensorValue<RSSI>::encode(static_cast<int>(d[rxbytes - 2]) - 148, d + rxbytes - 2);
+			d[0] += 2;
 			for (int i = 0; i < rxbytes; ++i) {
 				write_eeprom(eeprom_addr++, d[i]);
 			}
 		}
 	}
-	write_eeprom(eeprom_addr, 0xff);
+	mark_eeprom_eof();
 }
 
 static void receive_loop()
@@ -54,6 +62,8 @@ static void receive_loop()
 
 int main()
 {
+	mark_eeprom_eof();
+
 	GDO0::mode(INPUT);
 
 	radio::setup();

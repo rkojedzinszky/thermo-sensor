@@ -5,6 +5,7 @@ enum Sensor_Basic {
 	Power = 0,		// mV
 	Humidity,		// tenth relative percent
 	Temperature,		// tenth Celsius
+	RSSI,			// sensor RSSI
 	Extended = 0x7
 };
 

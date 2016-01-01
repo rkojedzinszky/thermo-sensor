@@ -27,7 +27,7 @@ void radio_reset()
 	radio::set<radio::TEST1>(0x35);
 	radio::set<radio::TEST0>(0x09);
 
-	radio::set<radio::PKTCTRL1>(0x28);
+	radio::set<radio::PKTCTRL1>(0x2c);
 
 	radio::set<radio::PATABLE>(0x60);
 
