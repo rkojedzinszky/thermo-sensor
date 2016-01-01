@@ -29,7 +29,7 @@ void radio_reset()
 
 	radio::set<radio::PKTCTRL1>(0x2c);
 
-	radio::set<radio::PATABLE>(0x60);
+	radio::set<radio::PATABLE>(0xc0);
 
 	radio::wcmd<radio::SCAL>();
 
