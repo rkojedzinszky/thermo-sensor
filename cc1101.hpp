@@ -187,17 +187,6 @@ public:
 		// AGC control
 		set<AGCCTRL1>(0x60);
 
-		// frequency synthesizer calibration
-		set<FSCAL3>(0xea);
-		set<FSCAL2>(0x2a);
-		set<FSCAL1>(0x00);
-		set<FSCAL0>(0x1f);
-
-		// Various test settings
-		set<TEST2>(0x81);
-		set<TEST1>(0x35);
-		set<TEST0>(0x09);
-
 		// patable
 		set<PATABLE>(0xc0);
 
