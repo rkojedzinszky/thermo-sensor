@@ -1,10 +1,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
-#define F_CPU 1000000L
-#include <util/delay.h>
-#include <common.hpp>
+#include <spi/spi_t84a.hpp>
 #include <am2302.hpp>
+#include <cc1101.hpp>
 #include <sensor.hpp>
 #include <vcc.hpp>
 #include <interrupt/WATCHDOG.hpp>
@@ -12,6 +11,7 @@
 
 typedef AM2302< Pin<Port<B>, 1> > Tsensor1;
 typedef Pin<Port<B>, 0> LED;
+typedef CC1101<SPI_t84a, Pin<Port<A>, 7>> radio;
 
 unsigned char id;
 
@@ -106,7 +106,7 @@ int main()
 	id = read_eeprom(511);
 
 	radio::setup();
-	radio_reset();
+	radio::reset();
 	radio::select();
 	radio::set<radio::IOCFG1>(0x06);
 	radio::release();

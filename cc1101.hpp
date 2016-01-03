@@ -151,4 +151,58 @@ public:
 		}
 		release();
 	}
+
+	static void reset() {
+		// reset
+		select();
+		wcmd<SRES>();
+		release();
+
+		select();
+
+		// disable GDOx pins
+		set<IOCFG2>(0x2f);
+		set<IOCFG1>(0x2f);
+		set<IOCFG0>(0x2f);
+
+		// max packet length
+		set<PKTLEN>(32);
+
+		// packet automation
+		set<PKTCTRL1>(0x0c);
+		set<PKTCTRL0>(0x45);
+
+		// frequency configuration
+		set<FREQ2>(0x10);
+		set<FREQ1>(0xa7);
+		set<FREQ0>(0x63);
+
+		// modem configuration
+		set<MDMCFG2>(0x1e);
+
+		// main radio control state machine configuration
+		set<MCSM1>(0x3c);
+		set<MCSM0>(0x34);
+
+		// AGC control
+		set<AGCCTRL1>(0x60);
+
+		// frequency synthesizer calibration
+		set<FSCAL3>(0xea);
+		set<FSCAL2>(0x2a);
+		set<FSCAL1>(0x00);
+		set<FSCAL0>(0x1f);
+
+		// Various test settings
+		set<TEST2>(0x81);
+		set<TEST1>(0x35);
+		set<TEST0>(0x09);
+
+		// patable
+		set<PATABLE>(0xc0);
+
+		wcmd<SCAL>();
+
+		release();
+	}
 };

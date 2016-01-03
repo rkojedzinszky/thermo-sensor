@@ -27,16 +27,12 @@ add_custom_target(flash
 	avrdude -c usbasp -p t85 -B 5 -U flash:w:main
 	DEPENDS main)
 
-add_library(common STATIC common.cpp)
-
-target_link_libraries(common spi)
-
 add_executable(sensor sensor.cpp vcc_tn84a.cpp)
 
-target_link_libraries(sensor common interrupt)
+target_link_libraries(sensor spi interrupt)
 
 add_executable(receiver receiver.cpp)
 
-target_link_libraries(receiver common interrupt)
+target_link_libraries(receiver spi interrupt)
 
 add_executable(tl tl.cpp)
