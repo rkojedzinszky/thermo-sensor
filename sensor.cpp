@@ -53,10 +53,8 @@ void send()
 	data.id = id;
 
 	radio::select();
-	radio::write_txfifo(data.raw, data.len + 1);
-	radio::select();
 	radio::wcmd<radio::STX>();
-	radio::release();
+	radio::write_txfifo(data.raw, data.len + 1);
 }
 
 static void loop();
