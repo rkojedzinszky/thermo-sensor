@@ -10,29 +10,11 @@ set(CMAKE_SHARED_LIBRARY_CXX_FLAGS)
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
 
-include_directories("${CMAKE_SOURCE_DIR}")
+include_directories("${CMAKE_SOURCE_DIR}/common/include")
 
-set(MCU "attiny84a")
+set(CMAKE_C_FLAGS "-O2")
+set(CMAKE_CXX_FLAGS "-O2 -std=c++11")
 
-set(CMAKE_C_FLAGS "-O2 -mmcu=${MCU}")
-set(CMAKE_CXX_FLAGS "-O2 -mmcu=${MCU} -std=c++11")
-
-add_subdirectory(interrupt)
-add_subdirectory(spi)
-
-# add_executable(main main.cpp)
-# target_link_libraries(main spi_tx5)
-
-add_custom_target(flash
-	avrdude -c usbasp -p t85 -B 5 -U flash:w:main
-	DEPENDS main)
-
-add_executable(sensor sensor.cpp vcc_tn84a.cpp)
-
-target_link_libraries(sensor spi interrupt)
-
-add_executable(receiver receiver.cpp)
-
-target_link_libraries(receiver spi interrupt)
-
-add_executable(tl tl.cpp)
+add_subdirectory(lib)
+add_subdirectory(sensor)
+add_subdirectory(receiver)
