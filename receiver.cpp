@@ -35,7 +35,7 @@ static void receive()
 		unsigned char rxbytes = radio::status<radio::RXBYTES>();
 		unsigned char d[rxbytes];
 		radio::read_rxfifo(d, rxbytes);
-		if (rxbytes >= 2 && rxbytes <= 32 && rxbytes == d[0] + 3) {
+		if (rxbytes >= 3 && rxbytes <= 32 && rxbytes == d[0] + 3) {
 			SensorValue<RSSI>::encode(static_cast<int>(d[rxbytes - 2]) - 148, d + rxbytes - 2);
 			d[0] += 2;
 			for (int i = 0; i < rxbytes; ++i) {
