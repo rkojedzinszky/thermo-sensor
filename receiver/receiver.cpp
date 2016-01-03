@@ -8,7 +8,6 @@
 #include <sensorvalue.hpp>
 
 typedef CC1101<USI, Pin<Port<A>, 7>> radio;
-typedef Pin<Port<A>, 3> GDO0;
 
 static void write_eeprom(int addr, unsigned char value)
 {
@@ -32,7 +31,7 @@ static void mark_eeprom_eof()
 
 static void receive()
 {
-	while (GDO0::is_set()) {
+	while (radio::USI::DI::is_set()) {
 		radio::select();
 		unsigned char rxbytes = radio::status<radio::RXBYTES>();
 		unsigned char d[rxbytes];
@@ -66,17 +65,15 @@ int main()
 {
 	mark_eeprom_eof();
 
-	GDO0::mode(INPUT);
-
 	radio::setup();
 	radio::reset();
 	radio::select();
 	radio::set<radio::IOCFG2>(0x7);
-	radio::set<radio::IOCFG0>(0x7);
+	radio::set<radio::IOCFG1>(0x7);
 	radio::release();
 
 	GIMSK |= _BV(PCIE0);
-	PCMSK0 |= _BV(PCINT3);
+	PCMSK0 |= _BV(radio::USI::DI::pin);
 
 	sei();
 
