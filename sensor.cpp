@@ -11,7 +11,6 @@
 #include <interrupt/PCINT0.hpp>
 
 typedef AM2302< Pin<Port<B>, 1> > Tsensor1;
-typedef Pin<Port<A>, 3> GDO0;
 typedef Pin<Port<B>, 0> LED;
 
 unsigned char id;
@@ -111,14 +110,14 @@ int main()
 	radio::setup();
 	radio_reset();
 	radio::select();
-	radio::set<radio::IOCFG0>(0x06);
+	radio::set<radio::IOCFG1>(0x06);
 	radio::release();
 
 	LED::mode(OUTPUT);
 
 	sei();
 
-	PCMSK0 |= _BV(PCINT3);
+	PCMSK0 |= _BV(radio::USI::DI::pin);
 	PCINT0Interrupt::set(radio_off);
 
 	radio_off();

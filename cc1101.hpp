@@ -2,9 +2,11 @@
 
 #include <port.hpp>
 
-template <class USI, class CSn>
+template <class USI_t, class CSn>
 class CC1101 {
 public:
+	typedef USI_t USI;
+
 	enum ConfReg {
 		IOCFG2 = 0x00,
 		IOCFG1 = 0x01,

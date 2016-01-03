@@ -58,9 +58,12 @@ enum PinMode {
 	OUTPUT
 };
 
-template <class Port, int pin>
+template <class Port_t, int pin_n>
 class Pin {
 public:
+	typedef Port_t Port;
+	constexpr static int pin = pin_n;
+
 	// reads PIN
 	static char value() {
 		return Port::pin() & _BV(pin);
