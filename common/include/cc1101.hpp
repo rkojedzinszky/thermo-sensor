@@ -178,17 +178,22 @@ public:
 		set<FREQ0>(0x63);
 
 		// modem configuration
-		set<MDMCFG2>(0x1e);
+		set<MDMCFG2>(0x1a);
 
 		// main radio control state machine configuration
 		set<MCSM1>(0x3c);
 		set<MCSM0>(0x34);
 
-		// AGC control
-		set<AGCCTRL1>(0x60);
+		// frequency synthesizer calibration
+		set<FSCAL3>(0xea);
+		set<FSCAL2>(0x2a);
+		set<FSCAL1>(0x00);
+		set<FSCAL0>(0x1f);
 
-		// patable
-		set<PATABLE>(0xc0);
+		// Various test settings
+		set<TEST2>(0x81);
+		set<TEST1>(0x35);
+		set<TEST0>(0x09);
 
 		wcmd<SCAL>();
 
