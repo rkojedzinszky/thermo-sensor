@@ -36,10 +36,10 @@ static void receive()
 		unsigned char rxbytes = radio::status<radio::RXBYTES>();
 		unsigned char d[rxbytes];
 		radio::read_rxfifo(d, rxbytes);
-		if (rxbytes >= 3 && rxbytes <= 32 && rxbytes == d[0] + 3) {
-			SensorValue<RSSI>::encode(static_cast<int>(d[rxbytes - 2]) - 148, d + rxbytes - 2);
-			d[0] += 2;
-			for (int i = 0; i < rxbytes; ++i) {
+		if (rxbytes == 34) {
+			SensorValue<RSSI>::encode(static_cast<int>(d[32]) - 148, d + d[0]);
+			d[0]++;
+			for (int i = 0; i <= d[0]; ++i) {
 				write_eeprom(eeprom_addr++, d[i]);
 			}
 		}

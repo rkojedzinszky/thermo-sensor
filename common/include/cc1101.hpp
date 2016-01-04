@@ -170,7 +170,7 @@ public:
 
 		// packet automation
 		set<PKTCTRL1>(0x0c);
-		set<PKTCTRL0>(0x45);
+		set<PKTCTRL0>(0x44);
 
 		// frequency configuration
 		set<FREQ2>(0x10);
@@ -178,7 +178,8 @@ public:
 		set<FREQ0>(0x63);
 
 		// modem configuration
-		set<MDMCFG2>(0x1a);
+		set<MDMCFG2>(0x12);
+		set<MDMCFG1>(0xa2);
 
 		// main radio control state machine configuration
 		set<MCSM1>(0x3c);

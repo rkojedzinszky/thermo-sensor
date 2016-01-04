@@ -35,7 +35,7 @@ void send()
 			unsigned char id;
 			unsigned char data[0];
 		};
-		unsigned char raw[16];
+		unsigned char raw[32];
 	} data;
 
 	VCC vccreader;
@@ -50,12 +50,12 @@ void send()
 	int voltage = vccreader.read_voltage();
 	dp += SensorValue<Power>::encode(voltage, dp);
 
-	data.len = dp - data.data + 1;
+	data.len = dp - data.data + 2;
 	data.id = id;
 
 	radio::select();
 	radio::wcmd<radio::STX>();
-	radio::write_txfifo(data.raw, data.len + 1);
+	radio::write_txfifo(data.raw, sizeof(data.raw));
 }
 
 static void loop();
