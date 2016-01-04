@@ -128,7 +128,7 @@ public:
 	static bool select()
 	{
 		CSn::clear();
-		return USI::DI::loop_until_clear(200);
+		return USI::DI::loop_until_clear(400);
 	}
 
 	static void release()
@@ -183,7 +183,7 @@ public:
 
 		// main radio control state machine configuration
 		set<MCSM1>(0x3c);
-		set<MCSM0>(0x34);
+		set<MCSM0>(0x38);
 
 		// frequency synthesizer calibration
 		set<FSCAL3>(0xea);
