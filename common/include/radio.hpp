@@ -64,6 +64,7 @@ inline void Radio<cc1101>::setup_for_rx()
 
 	// main radio control state machine configuration
 	cc1101::template set<CC1101::MCSM1>(0x3c);
+	cc1101::template set<CC1101::MCSM0>(0x34);
 
 	cc1101::release();
 }
