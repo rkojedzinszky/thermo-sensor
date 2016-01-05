@@ -31,7 +31,7 @@ inline void Radio<cc1101>::setup_common()
 	// frequency configuration
 	cc1101::template set<CC1101::FREQ2>(0x10);
 	cc1101::template set<CC1101::FREQ1>(0xa7);
-	cc1101::template set<CC1101::FREQ0>(0x63);
+	cc1101::template set<CC1101::FREQ0>(0xe1);
 
 	// modem configuration
 	cc1101::template set<CC1101::MDMCFG2>(0x17);
