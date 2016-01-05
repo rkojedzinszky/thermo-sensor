@@ -3,11 +3,11 @@
 #include <avr/interrupt.h>
 #include <port.hpp>
 #include <usi.hpp>
-#include <cc1101.hpp>
+#include <radio.hpp>
 #include <interrupt/PCINT0.hpp>
 #include <sensorvalue.hpp>
 
-typedef CC1101<USI, Pin<Port<A>, 7>> radio;
+typedef Radio<CC1101::CC1101<USI, Pin<Port<A>, 7>>> radio;
 
 static void write_eeprom(int addr, unsigned char value)
 {
@@ -33,7 +33,7 @@ static void receive()
 {
 	while (radio::USI::DI::is_set()) {
 		radio::select();
-		unsigned char rxbytes = radio::status<radio::RXBYTES>();
+		unsigned char rxbytes = radio::status<CC1101::RXBYTES>();
 		unsigned char d[rxbytes];
 		radio::read_rxfifo(d, rxbytes);
 		if (rxbytes == 34) {
@@ -50,7 +50,7 @@ static void receive()
 static void receive_loop()
 {
 	radio::select();
-	radio::wcmd<radio::SRX>();
+	radio::wcmd<CC1101::SRX>();
 	radio::release();
 	PCINT0Interrupt::set(receive);
 
@@ -66,10 +66,10 @@ int main()
 	mark_eeprom_eof();
 
 	radio::setup();
-	radio::reset();
+	radio::setup_for_rx();
 	radio::select();
-	radio::set<radio::IOCFG2>(0x7);
-	radio::set<radio::IOCFG1>(0x7);
+	radio::set<CC1101::IOCFG2>(0x7);
+	radio::set<CC1101::IOCFG1>(0x7);
 	radio::release();
 
 	GIMSK |= _BV(PCIE0);

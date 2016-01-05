@@ -4,7 +4,7 @@
 #include <avr/wdt.h>
 #include <port.hpp>
 #include <usi.hpp>
-#include <cc1101.hpp>
+#include <radio.hpp>
 #include <interrupt/WDT.hpp>
 #include <interrupt/PCINT0.hpp>
 #include <sensorvalue.hpp>
@@ -12,7 +12,7 @@
 #include <am2302.hpp>
 
 typedef AM2302< Pin<Port<B>, 4> > Tsensor1;
-typedef CC1101<USI, Pin<Port<B>, 3>> radio;
+typedef Radio<CC1101::CC1101<USI, Pin<Port<B>, 3>>> radio;
 
 unsigned char id;
 
@@ -54,7 +54,7 @@ void send()
 	data.id = id;
 
 	radio::select();
-	radio::wcmd<radio::STX>();
+	radio::wcmd<CC1101::STX>();
 	radio::write_txfifo(data.raw, sizeof(data.raw));
 }
 
@@ -65,7 +65,7 @@ static void radio_off()
 	GIMSK &= ~_BV(PCIE);
 
 	radio::select();
-	radio::wcmd<radio::SPWD>();
+	radio::wcmd<CC1101::SPWD>();
 	radio::release();
 
 	wdt_reset();
@@ -104,10 +104,10 @@ int main()
 	id = read_eeprom(511);
 
 	radio::setup();
-	radio::reset();
+	radio::setup_for_tx();
 	radio::select();
-	radio::set<radio::IOCFG1>(0x06);
-	radio::set<radio::IOCFG0>(0x06);
+	radio::set<CC1101::IOCFG1>(0x06);
+	radio::set<CC1101::IOCFG0>(0x06);
 	radio::release();
 
 	sei();
