@@ -48,7 +48,10 @@ inline void Radio<cc1101>::setup_common()
 	cc1101::template set<CC1101::TEST1>(0x35);
 	cc1101::template set<CC1101::TEST0>(0x09);
 
+	// calibrate
 	cc1101::template wcmd<CC1101::SCAL>();
+	while ((cc1101::template status<CC1101::MARCSTATE>() & 0x1f) != 1)
+		;
 }
 
 template <typename cc1101>
@@ -61,7 +64,6 @@ inline void Radio<cc1101>::setup_for_rx()
 
 	// main radio control state machine configuration
 	cc1101::template set<CC1101::MCSM1>(0x3c);
-	cc1101::template set<CC1101::MCSM0>(0x34);
 
 	cc1101::release();
 }
