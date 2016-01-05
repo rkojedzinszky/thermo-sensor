@@ -34,7 +34,7 @@ inline void Radio<cc1101>::setup_common()
 	cc1101::template set<CC1101::FREQ0>(0x63);
 
 	// modem configuration
-	cc1101::template set<CC1101::MDMCFG2>(0x12);
+	cc1101::template set<CC1101::MDMCFG2>(0x17);
 	cc1101::template set<CC1101::MDMCFG1>(0xa2);
 
 	// frequency synthesizer calibration
