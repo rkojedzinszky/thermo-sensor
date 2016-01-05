@@ -77,5 +77,8 @@ inline void Radio<cc1101>::setup_for_tx()
 	// main radio control state machine configuration
 	cc1101::template set<CC1101::MCSM0>(0x18);
 
+	// PATABLE
+	cc1101::template set<CC1101::PATABLE>(0x60);
+
 	cc1101::release();
 }
