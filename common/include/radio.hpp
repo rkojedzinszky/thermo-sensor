@@ -37,17 +37,6 @@ inline void Radio<cc1101>::setup_common()
 	cc1101::template set<CC1101::MDMCFG2>(0x17);
 	cc1101::template set<CC1101::MDMCFG1>(0xa2);
 
-	// frequency synthesizer calibration
-	cc1101::template set<CC1101::FSCAL3>(0xea);
-	cc1101::template set<CC1101::FSCAL2>(0x2a);
-	cc1101::template set<CC1101::FSCAL1>(0x00);
-	cc1101::template set<CC1101::FSCAL0>(0x1f);
-
-	// Various test settings
-	cc1101::template set<CC1101::TEST2>(0x81);
-	cc1101::template set<CC1101::TEST1>(0x35);
-	cc1101::template set<CC1101::TEST0>(0x09);
-
 	// calibrate
 	cc1101::template wcmd<CC1101::SCAL>();
 	while ((cc1101::template status<CC1101::MARCSTATE>() & 0x1f) != 1)
