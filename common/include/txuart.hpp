@@ -7,7 +7,7 @@ class TXUart {
 	static constexpr int delay = freq / baud;
 
 	static void start () {
-		TCNT0 = delay / 3;
+		TCNT0 = 0;
 		OCR0A = delay;
 		TCCR0A = _BV(WGM01);
 		TCCR0B = _BV(CS00);
