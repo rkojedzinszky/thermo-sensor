@@ -9,7 +9,7 @@
 #include <txuart.hpp>
 
 typedef Radio<CC1101::CC1101<USI, Pin<Port<A>, 7>>> radio;
-typedef TXUart<Pin<Port<B>, 0>, 1000000, 38400> txuart;
+typedef TXUart<Pin<Port<B>, 0>, 8000000, 230400> txuart;
 
 static void txbyte(unsigned char byte)
 {
