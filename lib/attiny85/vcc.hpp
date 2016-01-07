@@ -18,7 +18,7 @@ public:
 		PRR |= _BV(PRADC);
 	}
 
-	int read_voltage() {
+	unsigned read_voltage() {
 		done_ = false;
 		ADCInterrupt::set(interrupt);
 		ADCSRA |= _BV(ADIE);
@@ -30,11 +30,7 @@ public:
 		ADCSRA &= ~_BV(ADIE);
 		ADCInterrupt::clear();
 
-		if (ADC > 0) {
-			return (1023L * 1100L / ADC);
-		}
-
-		return -1;
+		return ADC;
 	}
 private:
 	static void interrupt();

@@ -47,8 +47,8 @@ void send()
 		dp += SensorValue<Temperature>::encode(temp, dp);
 	}
 
-	int voltage = vccreader.read_voltage();
-	dp += SensorValue<Power>::encode(voltage, dp);
+	unsigned vl = vccreader.read_voltage();
+	dp += SensorValue<Power>::encode(vl, dp);
 
 	data.len = dp - data.data + 2;
 	data.id = id;
