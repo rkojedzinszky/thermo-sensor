@@ -6,27 +6,26 @@
 #include <radio.hpp>
 #include <interrupt/PCINT0.hpp>
 #include <sensorvalue.hpp>
+#include <txuart.hpp>
 
 typedef Radio<CC1101::CC1101<USI, Pin<Port<A>, 7>>> radio;
+typedef TXUart<Pin<Port<B>, 0>, 1000000, 38400> txuart;
 
-static void write_eeprom(int addr, unsigned char value)
+static void txbyte(unsigned char byte)
 {
-	EECR = 0;
-
-	EEAR = addr;
-	EEDR = value;
-
-	EECR |= _BV(EEMPE);
-	EECR |= _BV(EEPE);
-
-	loop_until_bit_is_clear(EECR, EEPE);
+	static char nibble[] = "0123456789abcdef";
+	txuart::txbyte(nibble[byte >> 4]);
+	txuart::txbyte(nibble[byte & 15]);
 }
 
-static unsigned int eeprom_addr = 0;
-
-static void mark_eeprom_eof()
+static void txdata(unsigned char* data, unsigned char len)
 {
-	write_eeprom(eeprom_addr, 0xff);
+	cli();
+	for (;len > 0; --len) {
+		txbyte(*data++);
+	}
+	txuart::txbyte('\n');
+	sei();
 }
 
 static void receive()
@@ -38,13 +37,10 @@ static void receive()
 		radio::read_rxfifo(d, rxbytes);
 		if (rxbytes == 34) {
 			SensorValue<RSSI>::encode(static_cast<int>(d[32]) - 148, d + d[0]);
-			d[0]++;
-			for (int i = 0; i <= d[0]; ++i) {
-				write_eeprom(eeprom_addr++, d[i]);
-			}
+			d[0] += 2;
+			txdata(d, d[0]);
 		}
 	}
-	mark_eeprom_eof();
 }
 
 static void receive_loop()
@@ -63,7 +59,8 @@ static void receive_loop()
 
 int main()
 {
-	mark_eeprom_eof();
+	txuart::Pin::mode(OUTPUT);
+	txuart::Pin::set();
 
 	radio::setup();
 	radio::setup_for_rx();
