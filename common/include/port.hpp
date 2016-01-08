@@ -138,7 +138,7 @@ public:
 				: "=r" (ticks)
 				: "0" (ticks), "i" (_SFR_IO_ADDR(Port::pin())), "i" (pin)
 			    );
-		return timeout_us != 0;
+		return ticks != 0;
 	}
 };
 
