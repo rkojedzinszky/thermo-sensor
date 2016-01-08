@@ -23,7 +23,6 @@ inline bool AM2302<Pin>::read(short& humidity, short& temperature)
 	_delay_ms(1);
 	Pin::set();
 	_delay_us(30);
-	Pin::clear();
 	Pin::mode(INPUT);
 	Pin::set();
 	if (!Pin::loop_until_set(85)) {
