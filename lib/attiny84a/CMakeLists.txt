@@ -7,3 +7,5 @@ add_library("${MCU}"
 	vcc.cpp
 )
 target_link_libraries("${MCU}" "${MCU}_interrupt")
+
+compile_avr_crypto_lib()
