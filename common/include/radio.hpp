@@ -49,7 +49,7 @@ inline void Radio<cc1101>::setup_for_rx()
 	setup_common();
 
 	// packet automation
-	cc1101::template set<CC1101::PKTCTRL1>(0x6c);
+	cc1101::template set<CC1101::PKTCTRL1>(0x2c);
 
 	// main radio control state machine configuration
 	cc1101::template set<CC1101::MCSM1>(0x3c);
