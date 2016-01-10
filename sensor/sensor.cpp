@@ -73,6 +73,13 @@ static void radio_off()
 	WDTInterrupt::set(loop);
 }
 
+static void pcint()
+{
+	if (radio::USI::DI::is_clear()) {
+		radio_off();
+	}
+}
+
 #define P_TIMEOUTS 3
 
 static void loop()
@@ -88,14 +95,11 @@ static void loop()
 	} else if (counter == P_TIMEOUTS+1) {
 		counter = 0;
 		send();
+
 		WDTCR = _BV(WDP2) | _BV(WDP0) | _BV(WDIE);
 		WDTInterrupt::set(radio_off);
 
 		GIMSK |= _BV(PCIE);
-
-		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-		sleep_mode();
-		PCINT0Interrupt::pending();
 	}
 }
 
@@ -113,13 +117,14 @@ int main()
 	sei();
 
 	PCMSK |= _BV(radio::USI::DI::pin);
-	PCINT0Interrupt::set(radio_off);
+	PCINT0Interrupt::set(pcint);
 
 	radio_off();
 
 	for (;;) {
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
+		PCINT0Interrupt::pending();
 		WDTInterrupt::pending();
 	}
 }
