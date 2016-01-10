@@ -34,7 +34,7 @@ inline void Radio<cc1101>::setup_common()
 	cc1101::template set<CC1101::FREQ0>(0xe1);
 
 	// modem configuration
-	cc1101::template set<CC1101::MDMCFG2>(0x17);
+	cc1101::template set<CC1101::MDMCFG2>(0x16);
 	cc1101::template set<CC1101::MDMCFG1>(0xa2);
 
 	// calibrate
@@ -49,7 +49,7 @@ inline void Radio<cc1101>::setup_for_rx()
 	setup_common();
 
 	// packet automation
-	cc1101::template set<CC1101::PKTCTRL1>(0x0c);
+	cc1101::template set<CC1101::PKTCTRL1>(0x6c);
 
 	// main radio control state machine configuration
 	cc1101::template set<CC1101::MCSM1>(0x3c);
@@ -64,7 +64,7 @@ inline void Radio<cc1101>::setup_for_tx()
 	setup_common();
 
 	// main radio control state machine configuration
-	cc1101::template set<CC1101::MCSM0>(0x18);
+	cc1101::template set<CC1101::MCSM0>(0x38);
 
 	// PATABLE
 	cc1101::template set<CC1101::PATABLE>(0x60);
