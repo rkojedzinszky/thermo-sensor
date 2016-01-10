@@ -2,6 +2,11 @@
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
+
+extern "C" {
+#include <aes/aes.h>
+};
+
 #include <port.hpp>
 #include <usi.hpp>
 #include <radio.hpp>
@@ -10,36 +15,34 @@
 #include <sensorvalue.hpp>
 #include <vcc.hpp>
 #include <am2302.hpp>
+#include <common.hpp>
 
 typedef AM2302< Pin<Port<B>, 4> > Tsensor1;
 typedef Radio<CC1101::CC1101<USI, Pin<Port<B>, 3>>> radio;
 
-unsigned char id;
+static unsigned short magic;
+static unsigned char id;
+static aes128_ctx_t aes_ctx;
 
-static unsigned char read_eeprom(int addr)
+void init()
 {
-	loop_until_bit_is_clear(EECR, EEPE);
+	Deviceconfig config;
 
-	EEAR = addr;
+	config.read();
 
-	EECR |= _BV(EERE);
+	magic = config.magic;
+	id = config.id;
 
-	return EEDR;
+	aes128_init(config.key, &aes_ctx);
 }
 
 void send()
 {
-	union {
-		struct {
-			unsigned char len;
-			unsigned char id;
-			unsigned char data[0];
-		};
-		unsigned char raw[32];
-	} data;
+	static unsigned short seq_ = 0;
+	Radiopacket packet;
 
 	VCC vccreader;
-	unsigned char* dp = data.data;
+	unsigned char* dp = packet.data;
 
 	short hum, temp;
 	if (Tsensor1::read(hum, temp)) {
@@ -50,12 +53,16 @@ void send()
 	unsigned vl = vccreader.read_voltage();
 	dp += SensorValue<Power>::encode(vl, dp);
 
-	data.len = dp - data.data + 2;
-	data.id = id;
+	packet.magic = magic;
+	packet.len = dp - packet.raw;
+	packet.id = id;
+	packet.seq = seq_++;
+
+	aes128_enc(packet.raw, &aes_ctx);
 
 	radio::select();
 	radio::wcmd<CC1101::STX>();
-	radio::write_txfifo(data.raw, sizeof(data.raw));
+	radio::write_txfifo(packet.raw, sizeof(packet.raw));
 }
 
 static void loop();
@@ -105,7 +112,7 @@ static void loop()
 
 int main()
 {
-	id = read_eeprom(511);
+	init();
 
 	radio::setup();
 	radio::setup_for_tx();

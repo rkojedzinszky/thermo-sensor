@@ -22,8 +22,8 @@ inline void Radio<cc1101>::setup_common()
 	cc1101::template set<CC1101::IOCFG2>(0x2f);
 	cc1101::template set<CC1101::IOCFG0>(0x2f);
 
-	// max packet length
-	cc1101::template set<CC1101::PKTLEN>(32);
+	// fix packet length
+	cc1101::template set<CC1101::PKTLEN>(16);
 
 	// packet automation
 	cc1101::template set<CC1101::PKTCTRL0>(0x44);

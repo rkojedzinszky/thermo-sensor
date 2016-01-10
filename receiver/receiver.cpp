@@ -1,15 +1,35 @@
 #include <avr/io.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
+
+extern "C" {
+#include <aes/aes.h>
+};
+
 #include <port.hpp>
 #include <usi.hpp>
 #include <radio.hpp>
 #include <interrupt/PCINT0.hpp>
 #include <sensorvalue.hpp>
 #include <txuart.hpp>
+#include <common.hpp>
 
 typedef Radio<CC1101::CC1101<USI, Pin<Port<A>, 7>>> radio;
 typedef TXUart<Pin<Port<B>, 0>, 8000000, 230400> txuart;
+
+static unsigned short magic;
+static aes128_ctx_t aes_ctx;
+
+void init()
+{
+	Deviceconfig config;
+
+	config.read();
+
+	magic = config.magic;
+
+	aes128_init(config.key, &aes_ctx);
+}
 
 static void txbyte(unsigned char byte)
 {
@@ -33,12 +53,25 @@ static void receive()
 	while (radio::USI::DI::is_set()) {
 		radio::select();
 		unsigned char rxbytes = radio::status<CC1101::RXBYTES>();
-		unsigned char d[rxbytes];
-		radio::read_rxfifo(d, rxbytes);
-		if (rxbytes == 34) {
-			SensorValue<RSSI>::encode(static_cast<int>(static_cast<char>(d[32])) - 148, d + d[0]);
-			d[0] += 2;
-			txdata(d, d[0]);
+		if (rxbytes == sizeof(Radiopacket_status)) {
+			Radiopacket_status packet;
+
+			radio::read_rxfifo(packet.raw, sizeof(Radiopacket_status));
+
+			aes128_dec(packet.raw, &aes_ctx);
+
+			if (packet.magic != magic) {
+				return;
+			}
+
+			SensorValue<RSSI>::encode(static_cast<int>(packet.rssi) - 148, packet.raw + packet.len);
+
+			packet.len -= 2;
+
+			txdata(packet.raw + 4, packet.len);
+		} else {
+			unsigned char d[rxbytes];
+			radio::read_rxfifo(d, rxbytes);
 		}
 	}
 }
@@ -59,6 +92,8 @@ static void receive_loop()
 
 int main()
 {
+	init();
+
 	txuart::Pin::mode(OUTPUT);
 	txuart::Pin::set();
 

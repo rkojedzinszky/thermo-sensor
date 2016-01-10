@@ -5,6 +5,7 @@ add_subdirectory(interrupt)
 add_library("${MCU}"
 	usi.cpp
 	vcc.cpp
+	../common.cpp
 )
 target_link_libraries("${MCU}" "${MCU}_interrupt")
 

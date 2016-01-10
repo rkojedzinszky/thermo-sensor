@@ -16,6 +16,6 @@ macro(compile_avr_crypto_lib)
 endmacro(compile_avr_crypto_lib)
 
 macro(use_avr_crypto_lib)
-	include_directories("${AVR_CRYPTO_LIB_SRC}")
+	include_directories("${CMAKE_SOURCE_DIR}/lib/avr-crypto-lib")
 	set(AVR_CRYPTO_LIB_NAME ${MCU}_crypto)
 endmacro(use_avr_crypto_lib)
