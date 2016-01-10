@@ -67,7 +67,7 @@ inline void Radio<cc1101>::setup_for_tx()
 	cc1101::template set<CC1101::MCSM0>(0x38);
 
 	// PATABLE
-	cc1101::template set<CC1101::PATABLE>(0x60);
+	cc1101::template set<CC1101::PATABLE>(0xc0);
 
 	cc1101::release();
 }
