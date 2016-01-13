@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 
 extern "C" {
 #include <aes/aes.h>
@@ -33,9 +34,9 @@ void init()
 
 static void txbyte(unsigned char byte)
 {
-	static char nibble[] = "0123456789abcdef";
-	txuart::txbyte(nibble[byte >> 4]);
-	txuart::txbyte(nibble[byte & 15]);
+	static const char nibble[] PROGMEM = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+	txuart::txbyte(pgm_read_byte(&nibble[byte >> 4]));
+	txuart::txbyte(pgm_read_byte(&nibble[byte & 15]));
 }
 
 static void txdata(unsigned char* data, unsigned char len)
