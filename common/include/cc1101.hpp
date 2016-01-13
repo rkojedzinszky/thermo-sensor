@@ -100,31 +100,26 @@ public:
 		CSn::set();
 	}
 
-	template <ConfReg Reg>
-	static void set(unsigned char value) {
-		USI::xmit(Reg);
+	static void set(ConfReg reg, unsigned char value) {
+		USI::xmit(reg);
 		USI::xmit(value);
 	}
 
-	template <ConfReg Reg>
-	static unsigned char get() {
-		USI::xmit(Reg | 0x80);
+	static unsigned char get(ConfReg reg) {
+		USI::xmit(reg | 0x80);
 		return USI::xmit(0);
 	}
 
-	template <CommandStrobe Cmd>
-	static unsigned char rcmd() {
-		return USI::xmit(Cmd | 0x80);
+	static unsigned char rcmd(CommandStrobe cmd) {
+		return USI::xmit(cmd | 0x80);
 	}
 
-	template <CommandStrobe Cmd>
-	static unsigned char wcmd() {
-		return USI::xmit(Cmd);
+	static unsigned char wcmd(CommandStrobe cmd) {
+		return USI::xmit(cmd);
 	}
 
-	template <StatusReg Reg>
-	static unsigned char status() {
-		USI::xmit(Reg | 0xc0);
+	static unsigned char status(StatusReg reg) {
+		USI::xmit(reg | 0xc0);
 		return USI::xmit(0);
 	}
 

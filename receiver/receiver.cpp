@@ -53,7 +53,7 @@ static void receive()
 {
 	while (radio::USI::DI::is_set()) {
 		radio::select();
-		unsigned char rxbytes = radio::status<CC1101::RXBYTES>();
+		unsigned char rxbytes = radio::status(CC1101::RXBYTES);
 		if (rxbytes == sizeof(Radiopacket_status)) {
 			Radiopacket_status packet;
 
@@ -80,7 +80,7 @@ static void receive()
 static void receive_loop()
 {
 	radio::select();
-	radio::wcmd<CC1101::SRX>();
+	radio::wcmd(CC1101::SRX);
 	radio::release();
 	PCINT0Interrupt::set(receive);
 
@@ -101,8 +101,8 @@ int main()
 	radio::setup();
 	radio::setup_for_rx();
 	radio::select();
-	radio::set<CC1101::IOCFG2>(0x7);
-	radio::set<CC1101::IOCFG1>(0x7);
+	radio::set(CC1101::IOCFG2, 0x7);
+	radio::set(CC1101::IOCFG1, 0x7);
 	radio::release();
 
 	GIMSK |= _BV(PCIE0);

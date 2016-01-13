@@ -61,7 +61,7 @@ void send()
 	aes128_enc(packet.raw, &aes_ctx);
 
 	radio::select();
-	radio::wcmd<CC1101::STX>();
+	radio::wcmd(CC1101::STX);
 	radio::write_txfifo(packet.raw, sizeof(packet.raw));
 }
 
@@ -72,7 +72,7 @@ static void radio_off()
 	GIMSK &= ~_BV(PCIE);
 
 	radio::select();
-	radio::wcmd<CC1101::SPWD>();
+	radio::wcmd(CC1101::SPWD);
 	radio::release();
 
 	wdt_reset();
@@ -117,8 +117,8 @@ int main()
 	radio::setup();
 	radio::setup_for_tx();
 	radio::select();
-	radio::set<CC1101::IOCFG1>(0x06);
-	radio::set<CC1101::IOCFG0>(0x06);
+	radio::set(CC1101::IOCFG1, 0x06);
+	radio::set(CC1101::IOCFG0, 0x06);
 	radio::release();
 
 	sei();
