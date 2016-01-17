@@ -12,11 +12,12 @@ extern "C" {
 #include <radio.hpp>
 #include <interrupt/PCINT0.hpp>
 #include <sensorvalue.hpp>
-#include <txuart.hpp>
+#include <uart.hpp>
 #include <common.hpp>
 
 typedef Radio<CC1101::CC1101<USI, Pin<Port<A>, 7>>> radio;
-typedef TXUart<Pin<Port<B>, 0>, 8000000, 230400> txuart;
+typedef Uart<Pin<Port<B>, 0>, 5> txuart_t;
+static txuart_t txuart;
 
 static unsigned short magic;
 static aes128_ctx_t aes_ctx;
@@ -32,21 +33,25 @@ void init()
 	aes128_init(config.key, &aes_ctx);
 }
 
+static void txchr(unsigned char chr)
+{
+	while (!txuart.tx(chr)) {
+	}
+}
+
 static void txbyte(unsigned char byte)
 {
 	static const char nibble[] PROGMEM = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-	txuart::txbyte(pgm_read_byte(&nibble[byte >> 4]));
-	txuart::txbyte(pgm_read_byte(&nibble[byte & 15]));
+	txchr(pgm_read_byte(&nibble[byte >> 4]));
+	txchr(pgm_read_byte(&nibble[byte & 15]));
 }
 
 static void txdata(unsigned char* data, unsigned char len)
 {
-	cli();
 	for (;len > 0; --len) {
 		txbyte(*data++);
 	}
-	txuart::txbyte('\n');
-	sei();
+	txchr('\n');
 }
 
 static void receive()
@@ -85,18 +90,35 @@ static void receive_loop()
 	PCINT0Interrupt::set(receive);
 
 	while(1) {
-		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		set_sleep_mode(SLEEP_MODE_IDLE);
 		sleep_mode();
 		PCINT0Interrupt::pending();
 	}
 }
 
+/*{{{ uart */
+static void setup_uart()
+{
+	TCCR1A = 0;
+	TCCR1B = _BV(WGM12) | _BV(CS11);
+	TIMSK1 = _BV(OCIE1A);
+	OCR1A = 26;
+
+	txuart_t::Pin::mode(OUTPUT);
+	txuart_t::Pin::set();
+}
+
+ISR(TIM1_COMPA_vect)
+{
+	txuart.tx_int();
+}/*}}}*/
+
 int main()
 {
 	init();
 
-	txuart::Pin::mode(OUTPUT);
-	txuart::Pin::set();
+	txuart_t::Pin::mode(OUTPUT);
+	txuart_t::Pin::set();
 
 	radio::setup();
 	radio::setup_for_rx();
@@ -107,6 +129,8 @@ int main()
 
 	GIMSK |= _BV(PCIE0);
 	PCMSK0 |= _BV(radio::USI::DI::pin);
+
+	setup_uart();
 
 	sei();
 
