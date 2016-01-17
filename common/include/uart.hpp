@@ -5,142 +5,122 @@
 /*
  * \class Uart
  *
- * \brief SW implemented Full duplex UART @ 9600 baud
+ * \brief SW implemented UART @ 9600 baud
  * with 8MHz system clock
  *
- * Many constants are hard-coded
+ * constants are hard-coded
+ * You will call either rx_int or tx_int from an interrupt handler, but not both
+ * This will determine the uart's direction
  */
 
-template <class RX_t, class TX_t, int E_rx = 3, int E_tx = 3>
+template <class Pin_t, int Fifo_E = 3>
 class Uart {
 public:
-	/// This is expected to be called at 4x baud rate
-	static void timertick();
-	static bool rx(unsigned char& byte);
-	static bool tx(unsigned char byte);
+	/// [rt]x_int is expected to be called at 4x baud rate
 
-	typedef RX_t RX;
-	typedef TX_t TX;
+	/// These are for RX direction
+	bool rx(unsigned char& byte);
+	void rx_int();
 
-	typedef Fifo<unsigned char, E_rx> RXFifo_t;
-	typedef Fifo<unsigned char, E_tx> TXFifo_t;
+	/// These are for TX direction
+	bool tx(unsigned char byte);
+	void tx_int();
+
+	typedef Pin_t Pin;
+
 private:
 	static constexpr int bittimer = 4;
+	unsigned char timer;
+	unsigned char bit = 0;
 
-	static void handle_rx();
-	static void handle_tx();
-
-	static unsigned char rxtimer;
-	static unsigned char rxbit;
-	static RXFifo_t rxfifo;
-
-	static unsigned char txtimer;
-	static unsigned char txbit;
-	static TXFifo_t txfifo;
+	typedef Fifo<unsigned char, Fifo_E> Fifo_t;
+	Fifo_t fifo;
 };
 
-template <class RX, class TX, int E_rx, int E_tx>
-inline void Uart<RX, TX, E_rx, E_tx>::timertick()
+template <class Pin_t, int Fifo_E>
+inline bool Uart<Pin_t, Fifo_E>::rx(unsigned char& byte)
 {
-	handle_rx();
-	handle_tx();
+	if (fifo.empty())
+		return false;
+
+	byte = fifo.head();
+	fifo.pop();
+	return true;
 }
 
-template <class RX, class TX, int E_rx, int E_tx>
-inline bool Uart<RX, TX, E_rx, E_tx>::rx(unsigned char& byte)
+template <class Pin_t, int Fifo_E>
+inline void Uart<Pin_t, Fifo_E>::rx_int()
 {
-	if (!rxfifo.empty()) {
-		byte = rxfifo.head();
-		rxfifo.pop();
-		return true;
-	}
-
-	return false;
-}
-
-template <class RX, class TX, int E_rx, int E_tx>
-inline bool Uart<RX, TX, E_rx, E_tx>::tx(unsigned char byte)
-{
-	if (!txfifo.full()) {
-		txfifo.tail() = byte;
-		txfifo.push();
-		return true;
-	}
-
-	return false;
-}
-
-template <class RX, class TX, int E_rx, int E_tx>
-inline void Uart<RX, TX, E_rx, E_tx>::handle_rx()
-{
-	if (rxbit != 0) {
-		if (--rxtimer > 0)
+	if (bit != 0) {
+		if (--timer > 0)
 			return;
 
-		--rxbit;
+		--bit;
 	}
 
-	if (rxbit == 0) { // waiting for start bit
-		if (RX::is_clear()) { // stop detected
-			rxbit = 10;
-			rxtimer = bittimer;
+	if (bit == 0) { // waiting for start bit
+		if (Pin::is_clear()) { // stop detected
+			bit = 10;
+			timer = bittimer;
 		}
 		return;
 	}
 
-	if (rxbit == 1) { // stop bit
-		if (RX::is_set()) {
-			rxfifo.push();
+	if (bit == 1) { // stop bit
+		if (Pin::is_set()) {
+			fifo.push();
 		}
-		rxtimer = 1;
+		timer = 1;
 	} else { // data bit
-		rxfifo.tail() >>= 1;
-		if (RX::is_set()) {
-			rxfifo.tail() |= 0x80;
+		fifo.tail() >>= 1;
+		if (Pin::is_set()) {
+			fifo.tail() |= 0x80;
 		}
-		rxtimer = bittimer;
+		timer = bittimer;
 	}
 }
 
-template <class RX, class TX, int E_rx, int E_tx>
-inline void Uart<RX, TX, E_rx, E_tx>::handle_tx()
+template <class Pin_t, int Fifo_E>
+inline bool Uart<Pin_t, Fifo_E>::tx(unsigned char byte)
 {
-	if (txbit != 0) {
-		if (--txtimer > 0)
+	if (fifo.full())
+		return false;
+
+	fifo.tail() = byte;
+	fifo.push();
+	return true;
+}
+
+template <class Pin_t, int Fifo_E>
+inline void Uart<Pin_t, Fifo_E>::tx_int()
+{
+	if (bit != 0) {
+		if (--timer > 0)
 			return;
 
-		if (--txbit == 0)
-			txfifo.pop();
+		if (--bit == 0)
+			fifo.pop();
 	}
 
-	if (txbit == 0) { // check for new tx byte
-		if (!txfifo.empty()) {
-			TX::clear();
+	if (bit == 0) { // check for new tx byte
+		if (!fifo.empty()) {
+			Pin::clear();
 
-			txbit = 10;
-			txtimer = bittimer;
+			bit = 10;
+			timer = bittimer;
 		}
 		return;
 	}
 
-	if (txbit == 1) { // stop bit
-		TX::set();
+	if (bit == 1) { // stop bit
+		Pin::set();
 	} else { // data bit
-		if (txfifo.head() & 1) {
-			TX::set();
+		if (fifo.head() & 1) {
+			Pin::set();
 		} else {
-			TX::clear();
+			Pin::clear();
 		}
-		txfifo.head() >>= 1;
+		fifo.head() >>= 1;
 	}
-	txtimer = bittimer;
+	timer = bittimer;
 }
-
-#define Uart_declare_members(uart) \
-	template <> unsigned char uart::rxtimer = 0; \
-	template <> unsigned char uart::rxbit = 0; \
-	template <> uart::RXFifo_t uart::rxfifo = uart::RXFifo_t(); \
-	template <> unsigned char uart::txtimer = 0; \
-	template <> unsigned char uart::txbit = 0; \
-	template <> uart::TXFifo_t uart::txfifo = uart::TXFifo_t();
-
