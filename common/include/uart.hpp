@@ -72,10 +72,13 @@ inline void Uart<Pin_t, Fifo_E>::rx_int()
 		}
 		timer = 1;
 	} else { // data bit
-		fifo.tail() >>= 1;
+		unsigned char& d(fifo.tail());
+		unsigned char dv(d / 2);
+
 		if (Pin::is_set()) {
-			fifo.tail() |= 0x80;
+			dv |= 0x80;
 		}
+		d = dv;
 		timer = bittimer;
 	}
 }
@@ -115,12 +118,15 @@ inline void Uart<Pin_t, Fifo_E>::tx_int()
 	if (bit == 1) { // stop bit
 		Pin::set();
 	} else { // data bit
-		if (fifo.head() & 1) {
+		unsigned char& d(fifo.head());
+		unsigned char dv(d);
+
+		if (dv & 1) {
 			Pin::set();
 		} else {
 			Pin::clear();
 		}
-		fifo.head() >>= 1;
+		d = dv / 2;
 	}
 	timer = bittimer;
 }
