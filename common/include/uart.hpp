@@ -121,12 +121,18 @@ inline void Uart<Pin_t, Fifo_E>::tx_int()
 		unsigned char& d(fifo.head());
 		unsigned char dv(d);
 
-		if (dv & 1) {
-			Pin::set();
-		} else {
-			Pin::clear();
-		}
-		d = dv / 2;
+		asm(
+			"lsr %1\n"
+			"brcs 1f\n"
+			"cbi %2, %3\n"
+			"rjmp 2f\n"
+			"1: sbi %2, %3\n"
+			"2:"
+			: "=r" (dv)
+			: "0" (dv), "i" (_SFR_IO_ADDR(Pin::Port::port())), "i" (Pin::pin)
+		   );
+
+		d = dv;
 	}
 	timer = bittimer;
 }
