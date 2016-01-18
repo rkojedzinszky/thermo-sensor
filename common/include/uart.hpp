@@ -61,7 +61,7 @@ inline void Uart<Pin_t, Fifo_E>::rx_int()
 	if (bit == 0) { // waiting for start bit
 		if (Pin::is_clear()) { // stop detected
 			bit = 10;
-			timer = bittimer;
+			timer = bittimer + 1;
 		}
 		return;
 	}
