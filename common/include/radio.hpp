@@ -36,7 +36,7 @@ inline void Radio<cc1101>::setup_common()
 	// modem configuration
 	cc1101::set(CC1101::MDMCFG4, 0x3c);
 	cc1101::set(CC1101::MDMCFG3, 0x24);
-	cc1101::set(CC1101::MDMCFG2, 0x13);
+	cc1101::set(CC1101::MDMCFG2, 0x03);
 	cc1101::set(CC1101::DEVIATN, 0x53);
 
 	// calibrate
