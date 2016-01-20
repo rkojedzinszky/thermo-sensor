@@ -6,6 +6,7 @@ enum Sensor_Basic {
 	Humidity,		// tenth relative percent
 	Temperature,		// tenth Celsius
 	RSSI,			// sensor RSSI
+	LQI,			// sensor LQI
 	Extended = 0x7
 };
 

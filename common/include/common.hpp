@@ -18,7 +18,7 @@ struct Radiopacket {
 struct Radiopacket_status : public Radiopacket {
 public:
 	char rssi;
-	char pqi;
+	unsigned char lqi;
 };
 
 class Deviceconfig {

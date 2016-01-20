@@ -70,11 +70,16 @@ static void receive()
 				return;
 			}
 
-			SensorValue<RSSI>::encode(static_cast<int>(packet.rssi) - 148, packet.raw + packet.len);
+			unsigned char* s = packet.raw + 4;
+			unsigned char* e = packet.raw + packet.len;
+			char rssi = packet.rssi;
+			unsigned char lqi = packet.lqi;
+			e += SensorValue<RSSI>::encode(static_cast<int>(rssi) - 148, e);
+			e += SensorValue<LQI>::encode(static_cast<int>(lqi & 0x7f), e);
 
-			packet.len -= 2;
+			packet.len = e - s;
 
-			txdata(packet.raw + 4, packet.len);
+			txdata(s, packet.len);
 		} else {
 			unsigned char d[rxbytes];
 			radio::read_rxfifo(d, rxbytes);
