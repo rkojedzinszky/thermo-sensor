@@ -118,7 +118,6 @@ int main()
 	radio::setup_for_tx();
 	radio::select();
 	radio::set(CC1101::IOCFG1, 0x06);
-	radio::set(CC1101::IOCFG0, 0x06);
 	radio::release();
 
 	sei();
