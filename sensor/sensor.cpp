@@ -20,7 +20,7 @@ extern "C" {
 typedef AM2302< Pin<Port<B>, 4> > Tsensor1;
 typedef Radio<CC1101::CC1101<USI, Pin<Port<B>, 3>>> radio;
 
-static constexpr int wdt_p_timeouts = 2;
+static constexpr int wdt_p_timeouts = 3;
 static unsigned short magic;
 static unsigned char id;
 static aes128_ctx_t aes_ctx;
@@ -76,7 +76,7 @@ static void radio_off()
 	radio::wcmd(CC1101::SPWD);
 	radio::release();
 
-	WDTCR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0);
+	WDTCR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // 8 secs
 	WDTInterrupt::set(loop);
 }
 
@@ -94,7 +94,9 @@ static void loop()
 	counter++;
 
 	if (counter == wdt_p_timeouts) {
-		WDTCR = _BV(WDIE) | _BV(WDP2) | _BV(WDP1) | _BV(WDP0);
+		WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
+		short thum, ttemp;
+		Tsensor1::read(thum, ttemp);
 	} else if (counter == wdt_p_timeouts + 1) {
 		counter = 0;
 		send();
