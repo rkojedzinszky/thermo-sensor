@@ -20,6 +20,7 @@ extern "C" {
 typedef AM2302< Pin<Port<B>, 4> > Tsensor1;
 typedef Radio<CC1101::CC1101<USI, Pin<Port<B>, 3>>> radio;
 
+static constexpr int wdt_p_timeouts = 2;
 static unsigned short magic;
 static unsigned char id;
 static aes128_ctx_t aes_ctx;
@@ -36,7 +37,7 @@ void init()
 	aes128_init(config.key, &aes_ctx);
 }
 
-void send()
+static void send()
 {
 	static unsigned short seq_ = 0;
 	Radiopacket packet;
@@ -75,7 +76,6 @@ static void radio_off()
 	radio::wcmd(CC1101::SPWD);
 	radio::release();
 
-	wdt_reset();
 	WDTCR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0);
 	WDTInterrupt::set(loop);
 }
@@ -87,23 +87,18 @@ static void pcint()
 	}
 }
 
-#define P_TIMEOUTS 3
-
 static void loop()
 {
 	static unsigned char counter = 0;
 
 	counter++;
 
-	if (counter == P_TIMEOUTS) {
-		short thum, ttemp;
-		Tsensor1::read(thum, ttemp);
-		WDTCR = _BV(WDIE) | _BV(WDP3);
-	} else if (counter == P_TIMEOUTS+1) {
+	if (counter == wdt_p_timeouts) {
+		WDTCR = _BV(WDIE) | _BV(WDP2) | _BV(WDP1) | _BV(WDP0);
+	} else if (counter == wdt_p_timeouts + 1) {
 		counter = 0;
 		send();
 
-		WDTCR = _BV(WDP2) | _BV(WDP0) | _BV(WDIE);
 		WDTInterrupt::set(radio_off);
 
 		GIMSK |= _BV(PCIE);
@@ -118,6 +113,7 @@ int main()
 	radio::setup_for_tx();
 	radio::select();
 	radio::set(CC1101::IOCFG1, 0x06);
+	radio::set(CC1101::IOCFG0, 0x06);
 	radio::release();
 
 	sei();
