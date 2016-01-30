@@ -8,7 +8,7 @@ class VCC {
 public:
 	VCC() {
 		PRR &= ~_BV(PRADC);
-		ADCSRA = _BV(ADEN) | _BV(ADPS2) | _BV(ADPS0);
+		ADCSRA = _BV(ADEN) | _BV(ADPS2);
 		ADMUX = _BV(MUX3) | _BV(MUX2);
 
 	}
