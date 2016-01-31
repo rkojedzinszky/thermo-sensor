@@ -89,6 +89,7 @@ void autoconfig(Config& config)
 	radio::set(CC1101::PKTCTRL1, 0x09);
 	radio::set(CC1101::PKTCTRL0, 0x45);
 	radio::set(CC1101::IOCFG1, 0x07);
+	radio::set(CC1101::IOCFG0, 0x06);
 	radio::set(CC1101::MCSM1, 0x03);
 	radio::set(CC1101::ADDR, config.id());
 	radio::release();
