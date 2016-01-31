@@ -1,11 +1,13 @@
 #pragma once
 
 #include <avr/eeprom.h>
-#include <cc1101.h>
+#include <cc1101.hpp>
 #include <common.hpp>
 
 class Config {
 public:
+	static constexpr int MaxRadioConfigEntries = 16;
+
 	struct RadioConfig {
 		enum CC1101::ConfReg reg;
 		uint8_t value;
@@ -17,10 +19,10 @@ public:
 	uint16_t& magic() {
 		return data_.magic_;
 	}
-	uint8_t[16]& key() {
+	uint8_t* key() {
 		return data_.key_;
 	}
-	RadioConfig[16]& radioconfig() {
+	RadioConfig* radioconfig() {
 		return data_.radioconfig_;
 	}
 
@@ -46,7 +48,7 @@ private:
 			uint8_t id_;
 			uint16_t magic_;
 			uint8_t key_[16];
-			RadioConfig radioconfig_[16];
+			RadioConfig radioconfig_[MaxRadioConfigEntries];
 		};
 		uint8_t raw_[1];
 	} data_;
