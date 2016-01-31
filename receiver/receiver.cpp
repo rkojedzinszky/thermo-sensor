@@ -14,8 +14,10 @@ extern "C" {
 #include <sensorvalue.hpp>
 #include <uart.hpp>
 #include <common.hpp>
+#include <packet.hpp>
+#include "receiver.hpp"
+#include "autoconfig.hpp"
 
-typedef Radio<CC1101::CC1101<USI, Pin<Port<A>, 7>>> radio;
 typedef Uart<Pin<Port<B>, 0>, 5> txuart_t;
 static txuart_t txuart;
 
@@ -24,13 +26,29 @@ static aes128_ctx_t aes_ctx;
 
 void init()
 {
-	Deviceconfig config;
-
+	Config config;
 	config.read();
 
-	magic = config.magic;
+	radio::setup();
+	radio::setup_basic();
 
-	aes128_init(config.key, &aes_ctx);
+	autoconfig(config);
+
+	radio::select();
+
+	for (auto c = config.radioconfig(); c->reg != 0xff; ++c) {
+		radio::set(c->reg, c->value);
+	}
+
+	radio::setup_for_rx();
+
+	radio::set(CC1101::IOCFG2, 0x7);
+	radio::set(CC1101::IOCFG1, 0x7);
+
+	radio::release();
+
+	magic = config.magic();
+	aes128_init(config.key(), &aes_ctx);
 }
 
 static void txchr(unsigned char chr)
@@ -124,13 +142,6 @@ int main()
 
 	txuart_t::Pin::mode(OUTPUT);
 	txuart_t::Pin::set();
-
-	radio::setup();
-	radio::setup_for_rx();
-	radio::select();
-	radio::set(CC1101::IOCFG2, 0x7);
-	radio::set(CC1101::IOCFG1, 0x7);
-	radio::release();
 
 	GIMSK |= _BV(PCIE0);
 	PCMSK0 |= _BV(radio::USI::DI::pin);

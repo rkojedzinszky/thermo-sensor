@@ -34,6 +34,7 @@ struct Packet {
 struct ConfigRequestPacket : public Packet {
 	uint8_t src_;
 
+	ConfigRequestPacket() { }
 	ConfigRequestPacket(uint8_t src) : Packet(0, 1), src_(src) { }
 };
 

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cc1101.hpp>
 
 template <typename cc1101>
