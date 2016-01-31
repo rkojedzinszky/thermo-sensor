@@ -16,6 +16,7 @@ extern "C" {
 #include <vcc.hpp>
 #include <am2302.hpp>
 #include <common.hpp>
+#include <config.hpp>
 
 typedef AM2302< Pin<Port<B>, 4> > Tsensor1;
 typedef Radio<CC1101::CC1101<USI, Pin<Port<B>, 3>>> radio;
@@ -25,17 +26,49 @@ static unsigned short magic;
 static unsigned char id;
 static aes128_ctx_t aes_ctx;
 
+static void config_init(Config& config)
+{
+	VCC vccreader;
+	union {
+		struct {
+			short thum, ttemp;
+			short vcc;
+			uint8_t timer;
+		};
+		uint8_t raw[1];
+	} data;
+
+	TCCR0B |= _BV(CS00);
+	WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
+	set_sleep_mode(SLEEP_MODE_IDLE);
+	sleep_mode();
+	WDTInterrupt::fire_ = false;
+	WDTCR = 0;
+	data.timer = TCNT0;
+	TCCR0B = 0;
+
+	Tsensor1::read(data.thum, data.ttemp);
+	data.vcc = vccreader.read_voltage();
+
+	config.id() = crc8_ccitt(data.raw, sizeof(data));
+}
+
 void init()
 {
-	Deviceconfig config;
+	Config config;
 
 	config.read();
+
+	if (!config.valid()) {
+		config_init(config);
+	}
 
 	magic = config.magic;
 	id = config.id;
 
 	aes128_init(config.key, &aes_ctx);
 }
+
 
 static void send()
 {

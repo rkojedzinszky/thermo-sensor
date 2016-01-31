@@ -2,6 +2,8 @@
 
 #include <avr/eeprom.h>
 
+uint8_t crc8_ccitt(const uint8_t* buf, uint8_t len);
+
 struct Radiopacket {
 	union {
 		struct {
@@ -20,16 +22,3 @@ public:
 	char rssi;
 	unsigned char lqi;
 };
-
-class Deviceconfig {
-public:
-	unsigned short magic;
-	unsigned char key[16];
-	unsigned char id;
-
-	void read() {
-		eeprom_read_block(this, &config, sizeof(*this));
-	}
-private:
-	static Deviceconfig config;
-} __attribute__ ((__packed__));
