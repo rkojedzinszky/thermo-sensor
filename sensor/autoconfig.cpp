@@ -44,9 +44,6 @@ static void do_autoconfig(Config& config)
 
 	for (;;) {
 		radio::select();
-		radio::wcmd(CC1101::SIDLE);
-		radio::wcmd(CC1101::SFRX);
-		radio::wcmd(CC1101::SFTX);
 		radio::wcmd(CC1101::STX);
 		radio::write_txfifo(&req.len_, req.len_ + 1);
 
@@ -65,6 +62,12 @@ static void do_autoconfig(Config& config)
 				config = resp.config_;
 				config.write();
 				break;
+			} else {
+				radio::wcmd(CC1101::SIDLE);
+				while ((radio::status(CC1101::MARCSTATE) & 0x1f) != 1)
+					;
+				radio::wcmd(CC1101::SFRX);
+				radio::release();
 			}
 		}
 	}
