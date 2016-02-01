@@ -53,7 +53,7 @@ private:
 			uint16_t magic_;
 			uint8_t key_[16];
 			RadioConfig radioconfig_[MaxRadioConfigEntries];
-		};
+		} __attribute__ ((__packed__));
 		uint8_t raw_[1];
 	} data_;
 

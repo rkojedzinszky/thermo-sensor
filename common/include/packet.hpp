@@ -29,18 +29,18 @@ struct Packet {
 	Packet() { }
 	Packet(uint8_t dst) : dst_(dst) { }
 	Packet(uint8_t dst, uint8_t len) : len_(1 + len), dst_(dst) { }
-};
+} __attribute__ ((__packed__));
 
 struct ConfigRequestPacket : public Packet {
 	uint8_t src_;
 
 	ConfigRequestPacket() { }
 	ConfigRequestPacket(uint8_t src) : Packet(0, 1), src_(src) { }
-};
+} __attribute__ ((__packed__));
 
 struct ConfigResponsePacket : public Packet {
 	Config config_;
 
 	ConfigResponsePacket() { }
 	ConfigResponsePacket(uint8_t dst, const Config& config) : Packet(dst, sizeof(Config)), config_(config) { }
-};
+} __attribute__ ((__packed__));
