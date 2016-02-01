@@ -40,7 +40,6 @@ static void do_autoconfig(Config& config)
 	ConfigRequestPacket req(config.id());
 
 	WDTCR = _BV(WDIE) | _BV(WDP2) | _BV(WDP1) | _BV(WDP0); // 2 secs
-	GIMSK |= _BV(PCIE);
 	PCMSK |= _BV(radio::USI::DI::pin);
 
 	for (;;) {
@@ -51,10 +50,12 @@ static void do_autoconfig(Config& config)
 		radio::wcmd(CC1101::STX);
 		radio::write_txfifo(&req.len_, req.len_ + 1);
 
+		GIMSK |= _BV(PCIE);
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
 
 		if (radio::USI::DI::is_set()) {
+			GIMSK &= ~_BV(PCIE);
 			radio::select();
 			uint8_t rxbytes = radio::status(CC1101::RXBYTES);
 			if (rxbytes == sizeof(ConfigResponsePacket)) {
@@ -67,8 +68,6 @@ static void do_autoconfig(Config& config)
 			}
 		}
 	}
-
-	GIMSK &= ~_BV(PCIE);
 
 	radio::select();
 	radio::wcmd(CC1101::SIDLE);
@@ -91,7 +90,7 @@ void autoconfig(Config& config)
 	radio::set(CC1101::PKTCTRL0, 0x45);
 	radio::set(CC1101::IOCFG1, 0x07);
 	radio::set(CC1101::IOCFG0, 0x06);
-	radio::set(CC1101::MCSM1, 0x03);
+	radio::set(CC1101::MCSM1, 0x0f);
 	radio::set(CC1101::ADDR, config.id());
 	radio::release();
 
