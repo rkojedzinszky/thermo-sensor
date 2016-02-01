@@ -16,13 +16,11 @@ static void autoconfig_wdt()
 
 static void do_autoconfig(Config& config)
 {
-	ConfigRequestPacket req;
-
 	WDTCSR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // 8 secs
 	WATCHDOGInterrupt::set(autoconfig_wdt);
-	PCMSK0 |= _BV(radio::USI::DI::pin);
 
 	GIMSK |= _BV(PCIE0);
+	PCMSK0 |= _BV(radio::USI::DI::pin);
 
 	for (;;) {
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
@@ -78,7 +76,9 @@ void autoconfig(Config& config)
 	radio::select();
 	radio::set(CC1101::PKTCTRL1, 0x0a);
 	radio::set(CC1101::PKTCTRL0, 0x45);
+	radio::set(CC1101::IOCFG2, 0x6f);
 	radio::set(CC1101::IOCFG1, 0x07);
+	radio::set(CC1101::IOCFG0, 0x07);
 	radio::set(CC1101::MCSM1, 0x0f);
 	radio::set(CC1101::ADDR, 0);
 	radio::wcmd(CC1101::SRX);

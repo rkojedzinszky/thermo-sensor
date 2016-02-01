@@ -23,6 +23,7 @@ static txuart_t txuart;
 
 static unsigned short magic;
 static aes128_ctx_t aes_ctx;
+static void txdata(unsigned char* data, unsigned char len);
 
 void init()
 {
@@ -138,15 +139,12 @@ ISR(TIM1_COMPA_vect)
 
 int main()
 {
-	init();
+	setup_uart();
 
-	txuart_t::Pin::mode(OUTPUT);
-	txuart_t::Pin::set();
+	init();
 
 	GIMSK |= _BV(PCIE0);
 	PCMSK0 |= _BV(radio::USI::DI::pin);
-
-	setup_uart();
 
 	sei();
 
