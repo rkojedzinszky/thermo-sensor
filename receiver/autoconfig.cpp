@@ -7,7 +7,7 @@
 #include <packet.hpp>
 #include <vcc.hpp>
 
-static uint8_t autoconfig_timeout = 4;
+static uint8_t autoconfig_timeout = 2;
 
 static void autoconfig_wdt()
 {
@@ -19,12 +19,14 @@ static void do_autoconfig(Config& config)
 	WDTCSR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // 8 secs
 	WATCHDOGInterrupt::set(autoconfig_wdt);
 
-	GIMSK |= _BV(PCIE0);
 	PCMSK0 |= _BV(radio::USI::DI::pin);
 
 	for (;;) {
+		GIMSK |= _BV(PCIE0);
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
+		GIMSK &= ~_BV(PCIE0);
+
 		WATCHDOGInterrupt::pending();
 		if (autoconfig_timeout == 0) {
 			break;
@@ -50,14 +52,14 @@ static void do_autoconfig(Config& config)
 				config.write();
 			} else {
 				radio::wcmd(CC1101::SIDLE);
+				while ((radio::status(CC1101::MARCSTATE) & 0x1f) != 1)
+					;
 				radio::wcmd(CC1101::SFRX);
 				radio::wcmd(CC1101::SRX);
 				radio::release();
 			}
 		}
 	}
-
-	GIMSK &= ~_BV(PCIE0);
 
 	radio::select();
 	radio::wcmd(CC1101::SIDLE);
