@@ -33,17 +33,13 @@ inline void Radio<cc1101>::setup_basic()
 
 	cc1101::select();
 
-	// disable GDO[0,2] pins
-	cc1101::set(CC1101::IOCFG2, 0x2f);
-	cc1101::set(CC1101::IOCFG0, 0x2f);
-
 	// frequency configuration
 	cc1101::set(CC1101::FREQ2, 0x10);
 	cc1101::set(CC1101::FREQ1, 0xa7);
 	cc1101::set(CC1101::FREQ0, 0xe1);
 
 	// modem configuration
-	cc1101::set(CC1101::MDMCFG4, 0x9a);
+	cc1101::set(CC1101::MDMCFG4, 0x98);
 	cc1101::set(CC1101::MDMCFG3, 0x83);
 	cc1101::set(CC1101::MDMCFG2, 0x13);
 
@@ -56,6 +52,10 @@ inline void Radio<cc1101>::setup_basic()
 template <typename cc1101>
 inline void Radio<cc1101>::setup_common()
 {
+	// disable GDO[0,2] pins
+	cc1101::set(CC1101::IOCFG2, 0x2f);
+	cc1101::set(CC1101::IOCFG0, 0x2f);
+
 	// fix packet length
 	cc1101::set(CC1101::PKTLEN, 16);
 
