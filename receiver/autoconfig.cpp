@@ -16,6 +16,8 @@ static void autoconfig_wdt()
 
 static void do_autoconfig(Config& config)
 {
+	bool update_config = false;
+
 	WDTCSR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // 8 secs
 	WATCHDOGInterrupt::set(autoconfig_wdt);
 
@@ -40,16 +42,20 @@ static void do_autoconfig(Config& config)
 				radio::read_rxfifo(&req.len_, rxbytes);
 
 				ConfigResponsePacket resp(req.src_, config);
+				if (req.src_ & 0x80) {
+					config.id() += 1;
+					if (config.id() == 0x80) {
+						config.id() = 1;
+					}
+					update_config = true;
+				} else {
+					resp.config_.id() = req.src_;
+				}
+
 				radio::select();
 				radio::wcmd(CC1101::SIDLE);
 				radio::wcmd(CC1101::STX);
 				radio::write_txfifo(&resp.len_, resp.len_ + 1);
-
-				config.id() += 1;
-				if (config.id() == 0xff) {
-					config.id() = 1;
-				}
-				config.write();
 			} else {
 				radio::wcmd(CC1101::SIDLE);
 				while ((radio::status(CC1101::MARCSTATE) & 0x1f) != 1)
@@ -69,6 +75,10 @@ static void do_autoconfig(Config& config)
 
 	WATCHDOGInterrupt::fire_ = false;
 	PCINT0Interrupt::fire_ = false;
+
+	if (update_config) {
+		config.write();
+	}
 }
 
 void autoconfig(Config& config)

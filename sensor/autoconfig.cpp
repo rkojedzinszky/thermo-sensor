@@ -35,6 +35,13 @@ static uint8_t gen_id()
 	return crc8_ccitt(data.raw, sizeof(data));
 }
 
+static void do_send(ConfigRequestPacket& packet)
+{
+	radio::select();
+	radio::wcmd(CC1101::STX);
+	radio::write_txfifo(&packet.len_, packet.len_ + 1);
+}
+
 static void do_autoconfig(Config& config)
 {
 	ConfigRequestPacket req(config.id());
@@ -42,14 +49,17 @@ static void do_autoconfig(Config& config)
 	WDTCR = _BV(WDIE) | _BV(WDP2) | _BV(WDP1) | _BV(WDP0); // 2 secs
 	PCMSK |= _BV(radio::USI::DI::pin);
 
-	for (;;) {
-		radio::select();
-		radio::wcmd(CC1101::STX);
-		radio::write_txfifo(&req.len_, req.len_ + 1);
+	do_send(req);
 
+	for (;;) {
 		GIMSK |= _BV(PCIE);
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
+
+		if (WDTInterrupt::fire_) {
+			do_send(req);
+			WDTInterrupt::fire_ = false;
+		}
 
 		if (radio::USI::DI::is_set()) {
 			GIMSK &= ~_BV(PCIE);
@@ -67,6 +77,7 @@ static void do_autoconfig(Config& config)
 				while ((radio::status(CC1101::MARCSTATE) & 0x1f) != 1)
 					;
 				radio::wcmd(CC1101::SFRX);
+				radio::wcmd(CC1101::SRX);
 				radio::release();
 			}
 		}
@@ -86,7 +97,9 @@ void autoconfig(Config& config)
 {
 	sei();
 
-	config.id() = gen_id();
+	if (config.id() == 0xff) {
+		config.id() = gen_id() | 0x80;
+	}
 
 	radio::select();
 	radio::set(CC1101::PKTCTRL1, 0x09);

@@ -1,3 +1,4 @@
+#include <avr/cpufunc.h>
 #include <avr/io.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
@@ -23,13 +24,58 @@ static unsigned short magic;
 static unsigned char id;
 static aes128_ctx_t aes_ctx;
 
+static bool _check_reset()
+{
+	for (uint8_t i = 0; i < 10; ++i) {
+		radio::USI::USCK::clear();
+		_NOP();
+		_NOP();
+		if (!radio::USI::DO::is_clear()) {
+			return false;
+		}
+
+		radio::USI::USCK::set();
+		_NOP();
+		_NOP();
+		if (!radio::USI::DO::is_set()) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+static bool check_reset()
+{
+	radio::USI::DO::mode(INPUT);
+	radio::USI::DO::set();
+	radio::USI::USCK::mode(OUTPUT);
+
+	bool ret = _check_reset();
+
+	radio::USI::USCK::mode(INPUT);
+
+	return ret;
+}
+
 void init()
 {
-	radio::setup();
-	radio::setup_basic();
-
 	Config config;
 	config.read();
+
+	bool do_reset = check_reset();
+
+	if (do_reset) {
+		config.invalidate();
+
+		for (;;) {
+			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+			sleep_mode();
+		}
+	}
+
+	radio::setup();
+	radio::setup_basic();
 
 	if (!config.valid()) {
 		autoconfig(config);

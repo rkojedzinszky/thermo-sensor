@@ -40,6 +40,9 @@ public:
 	bool valid() const {
 		return crc8 == calculate_crc();
 	}
+	void invalidate() {
+		eeprom_write_byte(&config_.crc8, calculate_crc() ^ 0xff);
+	}
 
 private:
 	uint8_t calculate_crc() const {
