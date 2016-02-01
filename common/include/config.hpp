@@ -9,8 +9,12 @@ public:
 	static constexpr int MaxRadioConfigEntries = 16;
 
 	struct RadioConfig {
-		enum CC1101::ConfReg reg;
+		uint8_t reg_;
 		uint8_t value;
+
+		enum CC1101::ConfReg reg() const {
+			return static_cast<CC1101::ConfReg>(reg_);
+		}
 	} __attribute__ ((__packed__));
 
 	uint8_t& id() {

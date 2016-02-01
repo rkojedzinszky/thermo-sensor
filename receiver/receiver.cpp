@@ -36,8 +36,8 @@ void init()
 
 	radio::select();
 
-	for (auto c = config.radioconfig(); c->reg != 0xff; ++c) {
-		radio::set(c->reg, c->value);
+	for (auto c = config.radioconfig(); c->reg_ != 0xff; ++c) {
+		radio::set(c->reg(), c->value);
 	}
 
 	radio::setup_for_rx();
