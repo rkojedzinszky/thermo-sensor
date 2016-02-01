@@ -19,8 +19,6 @@ inline void Radio<cc1101>::calibrate()
 	cc1101::wcmd(CC1101::SCAL);
 	while ((cc1101::status(CC1101::MARCSTATE) & 0x1f) != 1)
 		;
-
-	cc1101::release();
 }
 
 template <typename cc1101>
@@ -48,6 +46,8 @@ inline void Radio<cc1101>::setup_basic()
 	cc1101::set(CC1101::PATABLE, 0xc0);
 
 	calibrate();
+
+	cc1101::release();
 }
 
 template <typename cc1101>
