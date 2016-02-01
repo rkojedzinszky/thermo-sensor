@@ -40,28 +40,48 @@ static void do_send(ConfigRequestPacket& packet)
 	radio::select();
 	radio::wcmd(CC1101::STX);
 	radio::write_txfifo(&packet.len_, packet.len_ + 1);
+
+	WDTCR = _BV(WDIE) | _BV(WDP1) | _BV(WDP0); // 0.125s
+}
+
+static void radio_off()
+{
+	WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
+
+	radio::select();
+	radio::wcmd(CC1101::SIDLE);
+	while ((radio::status(CC1101::MARCSTATE) & 0x1f) != 1)
+		;
+	radio::wcmd(CC1101::SPWD);
+	radio::release();
 }
 
 static void do_autoconfig(Config& config)
 {
 	ConfigRequestPacket req(config.id());
 
-	WDTCR = _BV(WDIE) | _BV(WDP2) | _BV(WDP1) | _BV(WDP0); // 2 secs
 	PCMSK |= _BV(radio::USI::DI::pin);
 
 	do_send(req);
+	bool sending = true;
 
 	for (;;) {
-		GIMSK |= _BV(PCIE);
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
 
 		if (WDTInterrupt::fire_) {
-			do_send(req);
+			if (sending) {
+				GIMSK &= ~_BV(PCIE);
+				radio_off();
+			} else {
+				do_send(req);
+				GIMSK |= _BV(PCIE);
+			}
+			sending = !sending;
 			WDTInterrupt::fire_ = false;
 		}
 
-		if (radio::USI::DI::is_set()) {
+		if (sending && radio::USI::DI::is_set()) {
 			GIMSK &= ~_BV(PCIE);
 			radio::select();
 			uint8_t rxbytes = radio::status(CC1101::RXBYTES);
