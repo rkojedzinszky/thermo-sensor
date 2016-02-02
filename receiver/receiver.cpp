@@ -139,9 +139,9 @@ ISR(TIM1_COMPA_vect)
 
 int main()
 {
-	setup_uart();
-
 	init();
+
+	setup_uart();
 
 	GIMSK |= _BV(PCIE0);
 	PCMSK0 |= _BV(radio::USI::DI::pin);
