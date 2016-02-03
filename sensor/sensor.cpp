@@ -173,7 +173,12 @@ static void radio_off()
 	radio::wcmd(CC1101::SPWD);
 	radio::release();
 
-	WDTCR = _BV(WDIE) | ((lfsr.get() & 7) + 1); // 32ms - 4s
+	uint8_t rnd = lfsr.get() & 7;
+	if (rnd == 7) {
+		WDTCR = _BV(WDIE) | _BV(WDP3); // 4 sec
+	} else {
+		WDTCR = _BV(WDIE) | (rnd + 1);
+	}
 	WDTInterrupt::set(random_timeout_cb);
 }
 
