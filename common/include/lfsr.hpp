@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <bitwise.hpp>
 
 template <int N>
 class LFSR {

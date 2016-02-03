@@ -17,7 +17,6 @@ extern "C" {
 #include <common.hpp>
 #include <config.hpp>
 #include <packet.hpp>
-#include <bitwise.hpp>
 #include "sensor.hpp"
 #include "autoconfig.hpp"
 
@@ -174,7 +173,7 @@ static void radio_off()
 	radio::wcmd(CC1101::SPWD);
 	radio::release();
 
-	WDTCR = _BV(WDIE) | asr<lfsr.bits() - 3>(lfsr.get()); // 16ms - 2s
+	WDTCR = _BV(WDIE) | ((lfsr.get() & 7) + 1); // 32ms - 4s
 	WDTInterrupt::set(random_timeout_cb);
 }
 
