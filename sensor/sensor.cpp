@@ -8,6 +8,7 @@ extern "C" {
 #include <aes/aes.h>
 };
 
+#include <lfsr.hpp>
 #include <port.hpp>
 #include <interrupt/WDT.hpp>
 #include <interrupt/PCINT0.hpp>
@@ -16,13 +17,40 @@ extern "C" {
 #include <common.hpp>
 #include <config.hpp>
 #include <packet.hpp>
+#include <bitwise.hpp>
 #include "sensor.hpp"
 #include "autoconfig.hpp"
 
-static constexpr int wdt_p_timeouts = 3;
+static LFSR<7> lfsr;
+static constexpr int wdt_p_timeouts = 5;
 static unsigned short magic;
 static unsigned char id;
 static aes128_ctx_t aes_ctx;
+
+static void lfsr_init(Config& config)/*{{{*/
+{
+	VCC vcc;
+
+	TCCR0B = _BV(CS00);
+
+	WDTCR = _BV(WDIE);
+
+	sei();
+
+	set_sleep_mode(SLEEP_MODE_IDLE);
+	sleep_mode();
+
+	WDTCR = 0;
+
+	uint16_t voltage = vcc.read_voltage();
+	cli();
+
+	lfsr.set(TCNT0 ^ (voltage & 0xff) ^ (voltage >> 8) ^ config.id());
+
+	WDTCR = 0;
+
+	TCCR0B = 0;
+}/*}}}*/
 
 static bool _check_reset()
 {
@@ -81,6 +109,8 @@ void init()
 		autoconfig(config);
 	}
 
+	lfsr_init(config);
+
 	radio::select();
 
 	for (auto c = config.radioconfig(); c->reg_ != 0xff; ++c) {
@@ -98,7 +128,6 @@ void init()
 	id = config.id();
 	aes128_init(config.key(), &aes_ctx);
 }
-
 
 static void send()
 {
@@ -131,6 +160,12 @@ static void send()
 
 static void loop();
 
+static void random_timeout_cb()
+{
+	WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
+	WDTInterrupt::set(loop);
+}
+
 static void radio_off()
 {
 	GIMSK &= ~_BV(PCIE);
@@ -139,8 +174,8 @@ static void radio_off()
 	radio::wcmd(CC1101::SPWD);
 	radio::release();
 
-	WDTCR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // 8 secs
-	WDTInterrupt::set(loop);
+	WDTCR = _BV(WDIE) | asr<lfsr.bits() - 3>(lfsr.get()); // 16ms - 2s
+	WDTInterrupt::set(random_timeout_cb);
 }
 
 static void pcint()
@@ -157,7 +192,6 @@ static void loop()
 	counter++;
 
 	if (counter == wdt_p_timeouts) {
-		WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
 		short thum, ttemp;
 		am2302::read(thum, ttemp);
 	} else if (counter == wdt_p_timeouts + 1) {
