@@ -90,7 +90,6 @@ static void do_autoconfig(Config& config)
 				radio::read_rxfifo(&resp.len_, rxbytes);
 
 				config = resp.config_;
-				config.write();
 				break;
 			} else {
 				radio::wcmd(CC1101::SIDLE);
@@ -133,5 +132,7 @@ void autoconfig(Config& config)
 	do_autoconfig(config);
 
 	cli();
+
+	config.write();
 }
 
