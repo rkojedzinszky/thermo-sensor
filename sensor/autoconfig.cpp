@@ -77,6 +77,7 @@ static void do_autoconfig(Config& config)
 			}
 			sending = !sending;
 			WDTInterrupt::fire_ = false;
+			continue;
 		}
 
 		if (sending && radio::USI::DI::is_set()) {
@@ -85,6 +86,7 @@ static void do_autoconfig(Config& config)
 			uint8_t rxbytes = radio::status(CC1101::RXBYTES);
 			if (rxbytes == sizeof(ConfigResponsePacket)) {
 				ConfigResponsePacket resp;
+
 				radio::read_rxfifo(&resp.len_, rxbytes);
 
 				config = resp.config_;
@@ -94,15 +96,18 @@ static void do_autoconfig(Config& config)
 				radio::wcmd(CC1101::SFRX);
 				radio::wcmd(CC1101::SRX);
 				radio::release();
+
+				GIMSK |= _BV(PCIE);
 			}
 		}
 	}
 
+	PCMSK = 0;
+	WDTCR = 0;
+
 	radio::select();
 	radio::sidle();
 	radio::release();
-
-	WDTCR = 0;
 
 	WDTInterrupt::fire_ = false;
 	PCINT0Interrupt::fire_ = false;
