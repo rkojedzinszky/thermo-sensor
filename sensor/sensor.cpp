@@ -175,10 +175,11 @@ static void radio_off()
 
 	uint8_t rnd = lfsr.get() & 7;
 	if (rnd == 7) {
-		WDTCR = _BV(WDIE) | _BV(WDP3); // 4 sec
+		rnd = _BV(WDIE) | _BV(WDP3); // 4 sec
 	} else {
-		WDTCR = _BV(WDIE) | (rnd + 1);
+		rnd = _BV(WDIE) | (rnd + 1);
 	}
+	WDTCR = rnd;
 	WDTInterrupt::set(random_timeout_cb);
 }
 
