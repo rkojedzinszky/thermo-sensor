@@ -114,8 +114,8 @@ public:
 	static void loop_until_clear() {
 		loop_until_bit_is_clear(Port::pin(), pin);
 	}
-	static bool loop_until_set(unsigned int timeout_us) {
-		unsigned char ticks = timeout_us / 5;
+	static uint8_t loop_until_set(unsigned int timeout_us) {
+		uint8_t ticks = timeout_us / 5;
 		asm volatile(
 				"1: sbic %2, %3\n"
 				"rjmp 2f\n"
@@ -125,10 +125,10 @@ public:
 				: "=r" (ticks)
 				: "0" (ticks), "i" (_SFR_IO_ADDR(Port::pin())), "i" (pin)
 			    );
-		return ticks != 0;
+		return ticks;
 	}
-	static bool loop_until_clear(unsigned int timeout_us) {
-		unsigned char ticks = timeout_us / 5;
+	static uint8_t loop_until_clear(unsigned int timeout_us) {
+		uint8_t ticks = timeout_us / 5;
 		asm volatile(
 				"1: sbis %2, %3\n"
 				"rjmp 2f\n"
@@ -138,7 +138,7 @@ public:
 				: "=r" (ticks)
 				: "0" (ticks), "i" (_SFR_IO_ADDR(Port::pin())), "i" (pin)
 			    );
-		return ticks != 0;
+		return ticks;
 	}
 };
 

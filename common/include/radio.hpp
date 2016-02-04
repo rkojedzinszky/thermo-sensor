@@ -10,6 +10,8 @@ public:
 	static void setup_common();
 	static void setup_for_rx();
 	static void setup_for_tx();
+
+	static void sidle();
 };
 
 template <typename cc1101>
@@ -89,4 +91,12 @@ inline void Radio<cc1101>::setup_for_tx()
 	cc1101::set(CC1101::MCSM0, 0x38);
 
 	calibrate();
+}
+
+template <typename cc1101>
+inline void Radio<cc1101>::sidle()
+{
+	cc1101::wcmd(CC1101::SIDLE);
+	while ((cc1101::status(CC1101::MARCSTATE) & 0x1f) != 1)
+		;
 }

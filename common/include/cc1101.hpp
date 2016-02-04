@@ -123,32 +123,46 @@ public:
 		return USI::xmit(0);
 	}
 
-	static bool select()
-	{
-		CSn::clear();
-		return USI::DI::loop_until_clear(1000);
-	}
+	static uint8_t select();
 
 	static void release()
 	{
 		CSn::set();
 	}
 
-	static void write_txfifo(unsigned char* values, int len) {
-		USI::xmit(0x7f);
-		while(len-- > 0) {
-			USI::xmit(*values++);
-		}
-		release();
-	}
+	static void write_txfifo(uint8_t* values, uint8_t len);
 
-	static void read_rxfifo(unsigned char* values, int len) {
-		USI::xmit(0xff);
-		while(len-- > 0) {
-			*values++ = USI::xmit(0);
-		}
-		release();
-	}
+	static void read_rxfifo(uint8_t* values, uint8_t len);
 };
+
+template <class USI_t, class CSn_t>
+uint8_t CC1101<USI_t, CSn_t>::select()
+{
+	CSn::clear();
+	return USI::DI::loop_until_clear(1000);
+}
+
+template <class USI_t, class CSn_t>
+void CC1101<USI_t, CSn_t>::write_txfifo(uint8_t* values, uint8_t len)
+{
+	USI::xmit(0x7f);
+
+	while(len-- > 0) {
+		USI::xmit(*values++);
+	}
+	release();
+}
+
+template <class USI_t, class CSn_t>
+void CC1101<USI_t, CSn_t>::read_rxfifo(uint8_t* values, uint8_t len)
+{
+	USI::xmit(0xff);
+
+	while(len-- > 0) {
+		*values++ = USI::xmit(0);
+	}
+	release();
+
+}
 
 }; // namespace CC1101
