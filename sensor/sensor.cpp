@@ -51,34 +51,16 @@ static void lfsr_init(Config& config)/*{{{*/
 	TCCR0B = 0;
 }/*}}}*/
 
-static bool _check_reset()
-{
-	for (uint8_t i = 0; i < 10; ++i) {
-		radio::USI::USCK::clear();
-		_NOP();
-		_NOP();
-		if (!radio::USI::DO::is_clear()) {
-			return false;
-		}
-
-		radio::USI::USCK::set();
-		_NOP();
-		_NOP();
-		if (!radio::USI::DO::is_set()) {
-			return false;
-		}
-	}
-
-	return true;
-}
-
 static bool check_reset()
 {
 	radio::USI::DO::mode(INPUT);
 	radio::USI::DO::set();
 	radio::USI::USCK::mode(OUTPUT);
+	radio::USI::USCK::clear();
 
-	bool ret = _check_reset();
+	_NOP();
+
+	bool ret = radio::USI::DO::is_clear();
 
 	radio::USI::USCK::mode(INPUT);
 
