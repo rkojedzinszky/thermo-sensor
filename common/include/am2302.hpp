@@ -14,7 +14,7 @@ private:
 };
 
 template <class Pin>
-inline bool AM2302<Pin>::read(short& humidity, short& temperature)
+bool AM2302<Pin>::read(short& humidity, short& temperature)
 {
 	unsigned char d[5];
 
