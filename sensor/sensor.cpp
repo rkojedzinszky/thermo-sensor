@@ -11,7 +11,6 @@ extern "C" {
 #include <lfsr.hpp>
 #include <port.hpp>
 #include <interrupt/WDT.hpp>
-#include <interrupt/PCINT0.hpp>
 #include <sensorvalue.hpp>
 #include <vcc.hpp>
 #include <common.hpp>
@@ -110,7 +109,7 @@ void init()
 	aes128_init(config.key(), &aes_ctx);
 }
 
-static void send()
+static void do_send()
 {
 	static unsigned short seq_ = 0;
 	Radiopacket packet;
@@ -139,56 +138,35 @@ static void send()
 	radio::write_txfifo(packet.raw, sizeof(packet.raw));
 }
 
-static void loop();
-
-static void random_timeout_cb()
-{
-	WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
-	WDTInterrupt::set(loop);
-}
-
 static void radio_off()
 {
-	GIMSK &= ~_BV(PCIE);
-
 	radio::select();
 	radio::wcmd(CC1101::SPWD);
 	radio::release();
+}
 
+static uint8_t random_wdt_delay()
+{
 	uint8_t rnd = lfsr.get() & 7;
+
 	if (rnd == 7) {
 		rnd = _BV(WDIE) | _BV(WDP3); // 4 sec
 	} else {
 		rnd = _BV(WDIE) | (rnd + 1);
 	}
-	WDTCR = rnd;
-	WDTInterrupt::set(random_timeout_cb);
+
+	return rnd;
 }
 
-static void pcint()
+// do a measurement and sleep a wdt tick (4 seconds)
+static void do_measure()
 {
-	if (radio::USI::DI::is_clear()) {
-		radio_off();
-	}
-}
+	short thum, ttemp;
 
-static void loop()
-{
-	static unsigned char counter = 0;
+	am2302::read(thum, ttemp);
 
-	counter++;
-
-	if (counter == wdt_p_timeouts) {
-		short thum, ttemp;
-		am2302::read(thum, ttemp);
-	} else if (counter == wdt_p_timeouts + 1) {
-		counter = 0;
-		send();
-
-		WDTInterrupt::set(radio_off);
-
-		GIMSK |= _BV(PCIE);
-	}
+	set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+	sleep_mode();
 }
 
 int main()
@@ -197,16 +175,36 @@ int main()
 
 	sei();
 
-	PCMSK |= _BV(radio::USI::DI::pin);
-	PCINT0Interrupt::set(pcint);
+	PRR = _BV(PRTIM1) | _BV(PRTIM0) | _BV(PRADC);
 
-	radio_off();
+	PCMSK = _BV(radio::USI::DI::pin);
 
 	for (;;) {
+		radio_off();
+
+		WDTCR = random_wdt_delay();
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
-		PCINT0Interrupt::pending();
-		WDTInterrupt::pending();
+
+		WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
+		for (uint8_t i = 0; i < wdt_p_timeouts; ++i) {
+			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+			sleep_mode();
+		}
+
+		do_measure();
+
+		do_send();
+
+		WDTInterrupt::fire_ = false;
+		GIMSK |= _BV(PCIE);
+
+		while (WDTInterrupt::fire_ == false && radio::USI::DI::is_set()) {
+			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+			sleep_mode();
+		}
+
+		GIMSK &= ~_BV(PCIE);
 	}
 }
 
