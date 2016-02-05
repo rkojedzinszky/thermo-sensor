@@ -40,14 +40,51 @@ static void do_send(ConfigRequestPacket& packet)
 	radio::select();
 	radio::wcmd(CC1101::STX);
 	radio::write_txfifo(&packet.len_, packet.len_ + 1);
+}
 
+static bool do_receive(Config& config)
+{
+	radio::select();
+	uint8_t rxbytes = radio::status(CC1101::RXBYTES);
+	if (rxbytes == sizeof(ConfigResponsePacket)) {
+		ConfigResponsePacket resp;
+
+		radio::read_rxfifo(&resp.len_, rxbytes);
+
+		config = resp.config_;
+		return true;
+	}
+
+	radio::sidle();
+	radio::wcmd(CC1101::SFRX);
+	radio::wcmd(CC1101::SRX);
+	radio::release();
+
+	return false;
+}
+
+static bool receive_with_timeout(Config& config)
+{
 	WDTCR = _BV(WDIE) | _BV(WDP1) | _BV(WDP0); // 0.125s
+
+	// wait for packet with timeout
+	WDTInterrupt::fire_ = false;
+	while (WDTInterrupt::fire_ == false) {
+		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		sleep_mode();
+
+		if (radio::USI::DI::is_set()) {
+			if (do_receive(config)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 static void radio_off()
 {
-	WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
-
 	radio::select();
 	radio::sidle();
 	radio::wcmd(CC1101::SPWD);
@@ -59,49 +96,27 @@ static void do_autoconfig(Config& config)
 	ConfigRequestPacket req(config.id());
 
 	PCMSK |= _BV(radio::USI::DI::pin);
-
-	do_send(req);
-	bool sending = true;
+	GIMSK |= _BV(PCIE);
 
 	for (;;) {
-		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-		sleep_mode();
+		do_send(req);
 
-		if (WDTInterrupt::fire_) {
-			if (sending) {
-				GIMSK &= ~_BV(PCIE);
-				radio_off();
-			} else {
-				do_send(req);
-				GIMSK |= _BV(PCIE);
-			}
-			sending = !sending;
-			WDTInterrupt::fire_ = false;
-			continue;
+		if (receive_with_timeout(config)) {
+			break;
 		}
 
-		if (sending && radio::USI::DI::is_set()) {
-			GIMSK &= ~_BV(PCIE);
-			radio::select();
-			uint8_t rxbytes = radio::status(CC1101::RXBYTES);
-			if (rxbytes == sizeof(ConfigResponsePacket)) {
-				ConfigResponsePacket resp;
+		radio_off();
 
-				radio::read_rxfifo(&resp.len_, rxbytes);
+		WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
+		WDTInterrupt::fire_ = false;
 
-				config = resp.config_;
-				break;
-			} else {
-				radio::sidle();
-				radio::wcmd(CC1101::SFRX);
-				radio::wcmd(CC1101::SRX);
-				radio::release();
-
-				GIMSK |= _BV(PCIE);
-			}
+		while (WDTInterrupt::fire_ == false) {
+			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+			sleep_mode();
 		}
 	}
 
+	GIMSK &= ~_BV(PCIE);
 	PCMSK = 0;
 	WDTCR = 0;
 
