@@ -3,12 +3,6 @@
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
-
-extern "C" {
-#include <aes/aes.h>
-};
-
-#include <lfsr.hpp>
 #include <port.hpp>
 #include <interrupt/WDT.hpp>
 #include <sensorvalue.hpp>
@@ -19,13 +13,9 @@ extern "C" {
 #include "sensor.hpp"
 #include "autoconfig.hpp"
 
-static LFSR<7> lfsr;
 static constexpr int wdt_p_timeouts = 5;
-static unsigned short magic;
-static unsigned char id;
-static aes128_ctx_t aes_ctx;
 
-static void lfsr_init(Config& config)/*{{{*/
+static uint8_t getseed()/*{{{*/
 {
 	VCC vcc;
 
@@ -43,11 +33,7 @@ static void lfsr_init(Config& config)/*{{{*/
 	uint16_t voltage = vcc.read_voltage();
 	cli();
 
-	lfsr.set(TCNT0 ^ (voltage & 0xff) ^ (voltage >> 8) ^ config.id());
-
-	WDTCR = 0;
-
-	TCCR0B = 0;
+	return TCNT0 ^ (voltage & 0xff) ^ (voltage >> 8);
 }/*}}}*/
 
 static bool check_reset()
@@ -66,7 +52,7 @@ static bool check_reset()
 	return ret;
 }
 
-void init()
+void init(Main& main)
 {
 	Config config;
 	config.read();
@@ -89,7 +75,7 @@ void init()
 		autoconfig(config);
 	}
 
-	lfsr_init(config);
+	main.seedlfsr(getseed() ^ config.id());
 
 	radio::select();
 
@@ -104,38 +90,9 @@ void init()
 
 	radio::release();
 
-	magic = config.magic();
-	id = config.id();
-	aes128_init(config.key(), &aes_ctx);
-}
-
-static void do_send()
-{
-	static unsigned short seq_ = 0;
-	Radiopacket packet;
-
-	VCC vccreader;
-	unsigned char* dp = packet.data;
-
-	short hum, temp;
-	if (am2302::read(hum, temp)) {
-		dp += SensorValue<Humidity>::encode(hum, dp);
-		dp += SensorValue<Temperature>::encode(temp, dp);
-	}
-
-	unsigned vl = vccreader.read_voltage();
-	dp += SensorValue<Power>::encode(vl, dp);
-
-	packet.magic = magic;
-	packet.len = dp - packet.raw;
-	packet.id = id;
-	packet.seq = seq_++;
-
-	aes128_enc(packet.raw, &aes_ctx);
-
-	radio::select();
-	radio::wcmd(CC1101::STX);
-	radio::write_txfifo(packet.raw, sizeof(packet.raw));
+	main.setmagic(config.magic());
+	main.setid(config.id());
+	main.setkey(config.key());
 }
 
 static void radio_off()
@@ -143,19 +100,6 @@ static void radio_off()
 	radio::select();
 	radio::wcmd(CC1101::SPWD);
 	radio::release();
-}
-
-static uint8_t random_wdt_delay()
-{
-	uint8_t rnd = lfsr.get() & 7;
-
-	if (rnd == 7) {
-		rnd = _BV(WDIE) | _BV(WDP3); // 4 sec
-	} else {
-		rnd = _BV(WDIE) | (rnd + 1);
-	}
-
-	return rnd;
 }
 
 // do a measurement and sleep a wdt tick (4 seconds)
@@ -169,16 +113,8 @@ static void do_measure()
 	sleep_mode();
 }
 
-int main()
+void Main::loop()
 {
-	init();
-
-	sei();
-
-	PRR = _BV(PRTIM1) | _BV(PRTIM0) | _BV(PRADC);
-
-	PCMSK = _BV(radio::USI::DI::pin);
-
 	for (;;) {
 		radio_off();
 
@@ -194,7 +130,7 @@ int main()
 
 		do_measure();
 
-		do_send();
+		send();
 
 		WDTInterrupt::fire_ = false;
 		GIMSK |= _BV(PCIE);
@@ -206,6 +142,49 @@ int main()
 
 		GIMSK &= ~_BV(PCIE);
 	}
+}
+
+inline void Main::send()
+{
+	Radiopacket packet;
+
+	VCC vccreader;
+	unsigned char* dp = packet.data;
+
+	short hum, temp;
+	if (am2302::read(hum, temp)) {
+		dp += SensorValue<Humidity>::encode(hum, dp);
+		dp += SensorValue<Temperature>::encode(temp, dp);
+	}
+
+	unsigned vl = vccreader.read_voltage();
+	dp += SensorValue<Power>::encode(vl, dp);
+
+	packet.magic = magic_;
+	packet.len = dp - packet.raw;
+	packet.id = id_;
+	packet.seq = seq_++;
+
+	::aes128_enc(packet.raw, &aes_ctx_);
+
+	radio::select();
+	radio::wcmd(CC1101::STX);
+	radio::write_txfifo(packet.raw, sizeof(packet.raw));
+}
+
+int main()
+{
+	Main main;
+
+	init(main);
+
+	sei();
+
+	PRR = _BV(PRTIM1) | _BV(PRTIM0) | _BV(PRADC);
+
+	PCMSK = _BV(radio::USI::DI::pin);
+
+	main.loop();
 }
 
 template uint8_t CC1101::CC1101<USI, Pin<Port<B>, 3>>::select();
