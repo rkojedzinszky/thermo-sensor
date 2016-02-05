@@ -17,20 +17,11 @@ extern template class CC1101::CC1101<USI, Pin<Port<B>, 3>>;
 
 class Main {
 public:
+	void init();
+
 	void loop();
 
-	void setmagic(uint16_t magic) {
-		magic_ = magic;
-	}
-	void setid(uint8_t id) {
-		id_ = id;
-	}
-	void setkey(const uint8_t* key) {
-		::aes128_init(key, &aes_ctx_);
-	}
-	void seedlfsr(uint8_t seed) {
-		lfsr.set(seed);
-	}
+private:
 	uint8_t random_wdt_delay() {
 		uint8_t rnd = lfsr.get() & 7;
 
@@ -42,7 +33,6 @@ public:
 
 		return rnd;
 	}
-private:
 	void send();
 
 	uint16_t seq_ = 0;

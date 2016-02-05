@@ -51,7 +51,7 @@ static bool check_reset()
 	return ret;
 }
 
-void init(Main& main)
+void Main::init()
 {
 	Config config;
 	config.read();
@@ -74,7 +74,7 @@ void init(Main& main)
 		autoconfig(config);
 	}
 
-	main.seedlfsr(getseed() ^ config.id());
+	lfsr.set(getseed() ^ config.id());
 
 	radio::select();
 
@@ -89,9 +89,9 @@ void init(Main& main)
 
 	radio::release();
 
-	main.setmagic(config.magic());
-	main.setid(config.id());
-	main.setkey(config.key());
+	magic_ = config.magic();
+	id_ = config.id();
+	::aes128_init(config.key(), &aes_ctx_);
 }
 
 static void radio_off()
@@ -181,7 +181,7 @@ int main()
 
 	Main main;
 
-	init(main);
+	main.init();
 
 	main.loop();
 }
