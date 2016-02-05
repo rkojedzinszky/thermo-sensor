@@ -31,7 +31,6 @@ static uint8_t getseed()/*{{{*/
 	WDTCR = 0;
 
 	uint16_t voltage = vcc.read_voltage();
-	cli();
 
 	return TCNT0 ^ (voltage & 0xff) ^ (voltage >> 8);
 }/*}}}*/
@@ -115,6 +114,8 @@ static void do_measure()
 
 void Main::loop()
 {
+	PCMSK = _BV(radio::USI::DI::pin);
+
 	for (;;) {
 		radio_off();
 
@@ -174,15 +175,13 @@ inline void Main::send()
 
 int main()
 {
-	Main main;
-
-	init(main);
+	PRR = _BV(PRTIM1) | _BV(PRTIM0) | _BV(PRADC);
 
 	sei();
 
-	PRR = _BV(PRTIM1) | _BV(PRTIM0) | _BV(PRADC);
+	Main main;
 
-	PCMSK = _BV(radio::USI::DI::pin);
+	init(main);
 
 	main.loop();
 }

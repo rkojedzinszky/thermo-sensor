@@ -19,18 +19,19 @@ static uint8_t gen_id()
 		uint8_t raw[1];
 	} data;
 
-	TCCR0B |= _BV(CS00);
+	TCCR0B = _BV(CS00);
 
 	WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
 	set_sleep_mode(SLEEP_MODE_IDLE);
 	sleep_mode();
-	WDTInterrupt::fire_ = false;
 	WDTCR = 0;
 	data.timer = TCNT0;
 	TCCR0B = 0;
 
 	am2302::read(data.thum, data.ttemp);
 	data.vcc = vccreader.read_voltage();
+
+	WDTInterrupt::fire_ = false;
 
 	return crc8_ccitt(data.raw, sizeof(data));
 }
@@ -95,7 +96,7 @@ static void do_autoconfig(Config& config)
 {
 	ConfigRequestPacket req(config.id());
 
-	PCMSK |= _BV(radio::USI::DI::pin);
+	PCMSK = _BV(radio::USI::DI::pin);
 	GIMSK |= _BV(PCIE);
 
 	for (;;) {
@@ -117,7 +118,6 @@ static void do_autoconfig(Config& config)
 	}
 
 	GIMSK &= ~_BV(PCIE);
-	PCMSK = 0;
 	WDTCR = 0;
 
 	radio::select();
@@ -130,8 +130,6 @@ static void do_autoconfig(Config& config)
 
 void autoconfig(Config& config)
 {
-	sei();
-
 	if (config.id() == 0xff) {
 		config.id() = gen_id() | 0x80;
 	}
@@ -146,8 +144,6 @@ void autoconfig(Config& config)
 	radio::release();
 
 	do_autoconfig(config);
-
-	cli();
 
 	config.write();
 }
