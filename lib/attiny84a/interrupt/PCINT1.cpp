@@ -16,6 +16,3 @@ ISR(PCINT1_vect, ISR_NAKED)
 
 template <>
 volatile bool PCINT1Interrupt::fire_ = false;
-
-template <>
-callback_t PCINT1Interrupt::callback_ = nullptr;

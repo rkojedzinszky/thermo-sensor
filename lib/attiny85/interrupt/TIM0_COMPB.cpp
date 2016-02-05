@@ -16,6 +16,3 @@ ISR(TIM0_COMPB_vect, ISR_NAKED)
 
 template <>
 volatile bool TIM0_COMPBInterrupt::fire_ = false;
-
-template <>
-callback_t TIM0_COMPBInterrupt::callback_ = nullptr;

@@ -16,6 +16,3 @@ ISR(TIMER0_COMPA_vect, ISR_NAKED)
 
 template <>
 volatile bool TIMER0_COMPAInterrupt::fire_ = false;
-
-template <>
-callback_t TIMER0_COMPAInterrupt::callback_ = nullptr;

@@ -16,6 +16,3 @@ ISR(ADC_vect, ISR_NAKED)
 
 template <>
 volatile bool ADCInterrupt::fire_ = false;
-
-template <>
-callback_t ADCInterrupt::callback_ = nullptr;

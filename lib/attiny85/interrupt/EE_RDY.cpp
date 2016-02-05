@@ -16,6 +16,3 @@ ISR(EE_RDY_vect, ISR_NAKED)
 
 template <>
 volatile bool EE_RDYInterrupt::fire_ = false;
-
-template <>
-callback_t EE_RDYInterrupt::callback_ = nullptr;

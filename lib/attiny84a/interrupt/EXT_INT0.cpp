@@ -16,6 +16,3 @@ ISR(EXT_INT0_vect, ISR_NAKED)
 
 template <>
 volatile bool EXT_INT0Interrupt::fire_ = false;
-
-template <>
-callback_t EXT_INT0Interrupt::callback_ = nullptr;

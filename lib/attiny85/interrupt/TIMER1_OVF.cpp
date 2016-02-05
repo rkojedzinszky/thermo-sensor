@@ -16,6 +16,3 @@ ISR(TIMER1_OVF_vect, ISR_NAKED)
 
 template <>
 volatile bool TIMER1_OVFInterrupt::fire_ = false;
-
-template <>
-callback_t TIMER1_OVFInterrupt::callback_ = nullptr;

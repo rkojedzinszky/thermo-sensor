@@ -16,6 +16,3 @@ ISR(WDT_vect, ISR_NAKED)
 
 template <>
 volatile bool WDTInterrupt::fire_ = false;
-
-template <>
-callback_t WDTInterrupt::callback_ = nullptr;

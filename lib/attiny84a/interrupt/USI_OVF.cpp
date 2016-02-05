@@ -16,6 +16,3 @@ ISR(USI_OVF_vect, ISR_NAKED)
 
 template <>
 volatile bool USI_OVFInterrupt::fire_ = false;
-
-template <>
-callback_t USI_OVFInterrupt::callback_ = nullptr;

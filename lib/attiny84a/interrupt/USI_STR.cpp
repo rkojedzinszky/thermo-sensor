@@ -16,6 +16,3 @@ ISR(USI_STR_vect, ISR_NAKED)
 
 template <>
 volatile bool USI_STRInterrupt::fire_ = false;
-
-template <>
-callback_t USI_STRInterrupt::callback_ = nullptr;

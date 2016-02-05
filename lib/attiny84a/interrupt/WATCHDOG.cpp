@@ -16,6 +16,3 @@ ISR(WATCHDOG_vect, ISR_NAKED)
 
 template <>
 volatile bool WATCHDOGInterrupt::fire_ = false;
-
-template <>
-callback_t WATCHDOGInterrupt::callback_ = nullptr;

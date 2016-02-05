@@ -37,6 +37,11 @@ ISR(${int}_vect, ISR_NAKED)
 
 template <>
 volatile bool ${int}Interrupt::fire_ = false;
+EOF
+
+	cat > ${int}_cb.cpp <<EOF
+#include <avr/interrupt.h>
+#include <interrupt/${int}.hpp>
 
 template <>
 callback_t ${int}Interrupt::callback_ = nullptr;
@@ -52,7 +57,7 @@ EOF
 
 for int in $(sed -n -r -e '/_vect_num/{s/^.*define[[:space:]]+//; s/_vect_num.*//; p}' "$src"); do
 	gen_int $int
-	echo " $int.cpp" >> CMakeLists.txt
+	echo " $int.cpp ${int}_cb.cpp" >> CMakeLists.txt
 done
 
 echo ")" >> CMakeLists.txt

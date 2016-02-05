@@ -16,6 +16,3 @@ ISR(ANA_COMP_vect, ISR_NAKED)
 
 template <>
 volatile bool ANA_COMPInterrupt::fire_ = false;
-
-template <>
-callback_t ANA_COMPInterrupt::callback_ = nullptr;
