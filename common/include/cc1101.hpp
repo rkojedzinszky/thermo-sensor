@@ -143,7 +143,7 @@ uint8_t CC1101<USI_t, CSn_t>::select()
 }
 
 template <class USI_t, class CSn_t>
-void CC1101<USI_t, CSn_t>::write_txfifo(uint8_t* values, uint8_t len)
+inline void CC1101<USI_t, CSn_t>::write_txfifo(uint8_t* values, uint8_t len)
 {
 	USI::xmit(0x7f);
 
@@ -154,7 +154,7 @@ void CC1101<USI_t, CSn_t>::write_txfifo(uint8_t* values, uint8_t len)
 }
 
 template <class USI_t, class CSn_t>
-void CC1101<USI_t, CSn_t>::read_rxfifo(uint8_t* values, uint8_t len)
+inline void CC1101<USI_t, CSn_t>::read_rxfifo(uint8_t* values, uint8_t len)
 {
 	USI::xmit(0xff);
 
