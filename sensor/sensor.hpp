@@ -14,8 +14,9 @@ typedef AM2302<Pin<Port<B>, 4>> am2302;
 typedef Radio<CC1101::CC1101<USI, Pin<Port<B>, 3>>> radio;
 
 extern template class CC1101::CC1101<USI, Pin<Port<B>, 3>>;
+extern template class AM2302<Pin<Port<B>, 4>>;
 
-class Main {
+class Sensor {
 public:
 	void init();
 
