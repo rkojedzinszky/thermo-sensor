@@ -6,7 +6,9 @@ typedef volatile uint8_t mmio8_type;
 
 enum PortId {
 	A,
-	B
+	B,
+	C,
+	D,
 };
 
 template <PortId P>
@@ -56,6 +58,46 @@ inline mmio8_type& Port<B>::ddr()
 	return DDRB;
 }
 #endif // defined(PORTB)
+
+#if defined(PORTC)
+template <>
+inline mmio8_type& Port<C>::port()
+{
+	return PORTC;
+}
+
+template <>
+inline mmio8_type& Port<C>::pin()
+{
+	return PINC;
+}
+
+template <>
+inline mmio8_type& Port<C>::ddr()
+{
+	return DDRC;
+}
+#endif // defined(PORTC)
+
+#if defined(PORTD)
+template <>
+inline mmio8_type& Port<D>::port()
+{
+	return PORTD;
+}
+
+template <>
+inline mmio8_type& Port<D>::pin()
+{
+	return PIND;
+}
+
+template <>
+inline mmio8_type& Port<D>::ddr()
+{
+	return DDRD;
+}
+#endif // defined(PORTD)
 
 enum PinMode {
 	INPUT,
