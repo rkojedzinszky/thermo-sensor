@@ -4,7 +4,7 @@
 #include <interrupt/PCINT0.hpp>
 #include "sensor.hpp"
 
-static constexpr int wdt_p_timeouts = 5;
+static constexpr int wdt_p_timeouts = 3;
 
 static void radio_off()
 {
@@ -20,6 +20,7 @@ static void do_measure()
 
 	am2302::read(thum, ttemp);
 
+	WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
 	set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 	sleep_mode();
 }
@@ -31,11 +32,7 @@ void Sensor::loop()
 	for (;;) {
 		radio_off();
 
-		WDTCR = random_wdt_delay();
-		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-		sleep_mode();
-
-		WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
+		WDTCR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // 8 secs
 		for (uint8_t i = 0; i < wdt_p_timeouts; ++i) {
 			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 			sleep_mode();

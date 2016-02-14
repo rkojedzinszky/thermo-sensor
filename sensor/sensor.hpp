@@ -23,23 +23,10 @@ public:
 	void loop();
 
 private:
-	uint8_t random_wdt_delay() {
-		uint8_t rnd = lfsr.get() & 7;
-
-		if (rnd == 7) {
-			rnd = _BV(WDIE) | _BV(WDP3); // 4 sec
-		} else {
-			rnd = _BV(WDIE) | (rnd + 1);
-		}
-
-		return rnd;
-	}
 	void send();
 
 	uint16_t seq_ = 0;
 	unsigned short magic_;
 	unsigned char id_;
 	aes128_ctx_t aes_ctx_;
-
-	LFSR<7> lfsr;
 };
