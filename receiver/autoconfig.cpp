@@ -1,11 +1,10 @@
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
-#include <interrupt/WATCHDOG.hpp>
+#include <interrupt/WDT.hpp>
 #include <interrupt/PCINT0.hpp>
 #include "receiver.hpp"
 #include "autoconfig.hpp"
 #include <packet.hpp>
-#include <vcc.hpp>
 
 static uint8_t autoconfig_timeout = 2;
 
@@ -19,17 +18,17 @@ static void do_autoconfig(Config& config)
 	bool update_config = false;
 
 	WDTCSR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // 8 secs
-	WATCHDOGInterrupt::set(autoconfig_wdt);
+	WDTInterrupt::set(autoconfig_wdt);
 
 	PCMSK0 |= _BV(radio::USI::DI::pin);
 
 	for (;;) {
-		GIMSK |= _BV(PCIE0);
+		PCICR |= _BV(PCIE0);
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
-		GIMSK &= ~_BV(PCIE0);
+		PCICR &= ~_BV(PCIE0);
 
-		WATCHDOGInterrupt::pending();
+		WDTInterrupt::pending();
 		if (autoconfig_timeout == 0) {
 			break;
 		}
@@ -73,7 +72,7 @@ static void do_autoconfig(Config& config)
 
 	WDTCSR = 0;
 
-	WATCHDOGInterrupt::fire_ = false;
+	WDTInterrupt::fire_ = false;
 	PCINT0Interrupt::fire_ = false;
 
 	if (update_config) {

@@ -8,18 +8,13 @@ extern "C" {
 };
 
 #include <port.hpp>
-#include <usi.hpp>
 #include <radio.hpp>
 #include <interrupt/PCINT0.hpp>
 #include <sensorvalue.hpp>
-#include <uart.hpp>
 #include <common.hpp>
 #include <packet.hpp>
 #include "receiver.hpp"
 #include "autoconfig.hpp"
-
-typedef Uart<Pin<Port<B>, 0>, 5> txuart_t;
-static txuart_t txuart;
 
 static unsigned short magic;
 static aes128_ctx_t aes_ctx;
@@ -54,7 +49,7 @@ void init()
 
 static void txchr(unsigned char chr)
 {
-	while (!txuart.tx(chr)) {
+	while (!usart::tx(chr)) {
 	}
 }
 
@@ -121,32 +116,31 @@ static void receive_loop()
 }
 
 /*{{{ uart */
-static void setup_uart()
+ISR(USART_RX_vect)
 {
-	TCCR1A = 0;
-	TCCR1B = _BV(WGM12) | _BV(CS11);
-	TIMSK1 = _BV(OCIE1A);
-	OCR1A = 26;
-
-	txuart_t::Pin::mode(OUTPUT);
-	txuart_t::Pin::set();
+	usart::rx_ready();
 }
 
-ISR(TIM1_COMPA_vect)
+ISR(USART_UDRE_vect)
 {
-	txuart.tx_int();
+	usart::tx_ready();
 }/*}}}*/
 
 int main()
 {
 	init();
 
-	setup_uart();
+	usart::init();
 
-	GIMSK |= _BV(PCIE0);
+	PCICR |= _BV(PCIE0);
 	PCMSK0 |= _BV(radio::USI::DI::pin);
 
 	sei();
 
 	receive_loop();
 }
+
+template<>
+usart::rxfifo_t usart::rxfifo = usart::rxfifo_t();
+template<>
+usart::txfifo_t usart::txfifo = usart::txfifo_t();

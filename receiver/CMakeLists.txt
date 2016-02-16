@@ -1,4 +1,4 @@
-set_mcu(attiny84a)
+set_mcu(atmega328p)
 
 use_avr_crypto_lib()
 
