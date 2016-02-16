@@ -95,9 +95,9 @@ public:
 	typedef CSn_t CSn;
 
 	static void setup() {
-		USI::setup();
 		CSn::mode(OUTPUT);
 		CSn::set();
+		USI::setup();
 	}
 
 	static void set(ConfReg reg, unsigned char value) {
