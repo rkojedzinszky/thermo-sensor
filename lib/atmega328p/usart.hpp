@@ -69,8 +69,10 @@ bool Usart<rxfifo_E, txfifo_E>::tx(unsigned char byte)
 template <int rxfifo_E, int txfifo_E>
 inline void Usart<rxfifo_E, txfifo_E>::rx_ready()
 {
+	unsigned char byte = UDR0;
+
 	if (!rxfifo.full()) {
-		rxfifo.tail() = UDR0;
+		rxfifo.tail() = byte;
 		rxfifo.push();
 	}
 }
