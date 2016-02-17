@@ -65,6 +65,7 @@ static void txdata(unsigned char* data, unsigned char len)
 	for (;len > 0; --len) {
 		txbyte(*data++);
 	}
+	txchr('\r');
 	txchr('\n');
 }
 
