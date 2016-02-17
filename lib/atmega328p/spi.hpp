@@ -13,11 +13,7 @@ public:
 		SPCR = _BV(SPE) | _BV(MSTR);
 	}
 
-	static unsigned char xmit(unsigned char data) {
-		SPDR = data;
-		loop_until_bit_is_set(SPSR, SPIF);
-		return SPDR;
-	}
+	static unsigned char xmit(unsigned char data);
 private:
 	typedef ::Port<B> Port;
 public:
