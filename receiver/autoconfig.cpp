@@ -5,7 +5,6 @@
 #include "receiver.hpp"
 #include "autoconfig.hpp"
 #include <packet.hpp>
-#include <vcc.hpp>
 
 static uint8_t autoconfig_timeout = 2;
 

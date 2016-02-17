@@ -15,9 +15,9 @@ set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
 
 include_directories("${CMAKE_SOURCE_DIR}/common/include")
 
-set(CMAKE_ASM_FLAGS "-O2")
-set(CMAKE_C_FLAGS "-O2")
-set(CMAKE_CXX_FLAGS "-O2 -std=c++11")
+set(CMAKE_ASM_FLAGS "-O2 -mrelax")
+set(CMAKE_C_FLAGS "-O2 -mrelax")
+set(CMAKE_CXX_FLAGS "-O2 -std=c++11 -mrelax")
 
 macro(set_mcu mcu)
 set(MCU "${mcu}")
