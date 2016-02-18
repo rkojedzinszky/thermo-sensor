@@ -13,18 +13,6 @@ static void radio_off()
 	radio::release();
 }
 
-// do a measurement and sleep a wdt tick (4 seconds)
-static void do_measure()
-{
-	short thum, ttemp;
-
-	am2302::read(thum, ttemp);
-
-	WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
-	set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-	sleep_mode();
-}
-
 void Sensor::loop()
 {
 	PCMSK = _BV(radio::USI::DI::pin);
@@ -38,7 +26,11 @@ void Sensor::loop()
 			sleep_mode();
 		}
 
-		do_measure();
+		thermo_on(true);
+
+		WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
+		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		sleep_mode();
 
 		send();
 

@@ -30,3 +30,16 @@ private:
 	unsigned char id_;
 	aes128_ctx_t aes_ctx_;
 };
+
+static inline void _thermo_on(bool on)
+{
+	radio::set(CC1101::IOCFG2, on ? 0x6f : 0x2f);
+}
+
+static inline void thermo_on(bool on)
+{
+	radio::select();
+	_thermo_on(on);
+	radio::wcmd(CC1101::SPWD);
+	radio::release();
+}

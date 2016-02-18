@@ -15,6 +15,7 @@ void Sensor::send()
 		dp += SensorValue<Humidity>::encode(hum, dp);
 		dp += SensorValue<Temperature>::encode(temp, dp);
 	}
+	thermo_on(false);
 
 	unsigned vl = vccreader.read_voltage();
 	dp += SensorValue<Power>::encode(vl, dp);
