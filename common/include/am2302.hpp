@@ -24,7 +24,7 @@ bool AM2302<Pin>::read(short& humidity, short& temperature)
 	Pin::set();
 	_delay_us(30);
 	Pin::mode(INPUT);
-	Pin::set();
+	Pin::clear();
 	if (!Pin::loop_until_set(85)) {
 		return false;
 	}
