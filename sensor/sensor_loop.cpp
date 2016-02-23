@@ -1,48 +1,55 @@
 #include <avr/io.h>
 #include <avr/sleep.h>
-#include <interrupt/WDT.hpp>
 #include <interrupt/PCINT0.hpp>
 #include "sensor.hpp"
 
-static constexpr int wdt_p_timeouts = 3;
+static constexpr int delay_1 = 26;
+static constexpr int delay_2 = 2;
 
-static void radio_off()
-{
-	radio::select();
-	radio::wcmd(CC1101::SPWD);
-	radio::release();
-}
+static constexpr unsigned int delay_1h = (delay_1 * 1083) >> 8;
+static constexpr unsigned int delay_1l = (delay_1 * 1083) & 0xff;
+
+static constexpr unsigned int delay_2h = (delay_2 * 1083) >> 8;
+static constexpr unsigned int delay_2l = (delay_2 * 1083) & 0xff;
 
 void Sensor::loop()
 {
 	PCMSK = _BV(radio::USI::DI::pin);
 
 	for (;;) {
-		radio_off();
+		radio::select();
+		radio::set(CC1101::WOREVT1, delay_1h);
+		radio::set(CC1101::WOREVT0, delay_1l);
+		radio::set(CC1101::WORCTRL, 0x71);
+		radio::set(CC1101::IOCFG1, 0xa4);
+		radio::wcmd(CC1101::SPWD);
+		radio::release();
 
-		WDTCR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // 8 secs
-		for (uint8_t i = 0; i < wdt_p_timeouts; ++i) {
-			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-			sleep_mode();
-		}
-
-		thermo_on(true);
-
-		WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
+		GIMSK |= _BV(PCIE);
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
+		GIMSK &= ~_BV(PCIE);
+
+		radio::select();
+		_thermo_on(true);
+		radio::set(CC1101::WOREVT1, delay_2h);
+		radio::set(CC1101::WOREVT0, delay_2l);
+		radio::set(CC1101::MCSM0, 0x38);
+		radio::wcmd(CC1101::SPWD);
+		radio::release();
+
+		GIMSK |= _BV(PCIE);
+		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		sleep_mode();
+		GIMSK &= ~_BV(PCIE);
 
 		send();
 
-		WDTInterrupt::fire_ = false;
-		PCINT0Interrupt::fire_ = false;
 		GIMSK |= _BV(PCIE);
-
-		while (WDTInterrupt::fire_ == false && radio::USI::DI::is_set()) {
+		while (radio::USI::DI::is_set()) {
 			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 			sleep_mode();
 		}
-
 		GIMSK &= ~_BV(PCIE);
 	}
 }

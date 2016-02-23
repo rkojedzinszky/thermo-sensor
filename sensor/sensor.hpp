@@ -33,7 +33,7 @@ private:
 
 static inline void _thermo_on(bool on)
 {
-	radio::set(CC1101::IOCFG2, on ? 0x6f : 0x2f);
+	radio::set(CC1101::IOCFG2, on ? 0x6f : 0x2e);
 }
 
 static inline void thermo_on(bool on)
