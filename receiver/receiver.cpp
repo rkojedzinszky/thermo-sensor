@@ -15,6 +15,7 @@ extern "C" {
 #include <packet.hpp>
 #include "receiver.hpp"
 #include "autoconfig.hpp"
+#include "rfc2045.h"
 
 static unsigned short magic;
 static aes128_ctx_t aes_ctx;
@@ -53,18 +54,16 @@ static void txchr(unsigned char chr)
 	}
 }
 
-static void txbyte(unsigned char byte)
-{
-	static const char nibble[] PROGMEM = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-	txchr(pgm_read_byte(&nibble[byte >> 4]));
-	txchr(pgm_read_byte(&nibble[byte & 15]));
-}
-
 static void txdata(unsigned char* data, unsigned char len)
 {
-	for (;len > 0; --len) {
-		txbyte(*data++);
+	uint8_t b64[32];
+
+	uint8_t l = RFC2045::encode(data, len, b64);
+
+	for (uint8_t i = 0; i < l; ++i) {
+		txchr(b64[i]);
 	}
+
 	txchr('\r');
 	txchr('\n');
 }
@@ -85,7 +84,7 @@ static void receive()
 				return;
 			}
 
-			unsigned char* s = packet.raw + 4;
+			unsigned char* s = packet.raw + 2;
 			unsigned char* e = packet.raw + packet.len;
 			char rssi = packet.rssi;
 			unsigned char lqi = packet.lqi;
