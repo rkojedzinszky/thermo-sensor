@@ -1,3 +1,4 @@
+#include <avr/wdt.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 #include <interrupt/WDT.hpp>
@@ -17,8 +18,10 @@ static void do_autoconfig(Config& config)
 {
 	bool update_config = false;
 
-	WDTCSR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // 8 secs
 	WDTInterrupt::set(autoconfig_wdt);
+	wdt_reset();
+	WDTCSR = _BV(WDCE) | _BV(WDE);
+	WDTCSR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // 8 secs
 
 	PCMSK0 |= _BV(radio::USI::DI::pin);
 
@@ -66,11 +69,13 @@ static void do_autoconfig(Config& config)
 		}
 	}
 
+	wdt_reset();
+	WDTCSR = _BV(WDCE) | _BV(WDE);
+	WDTCSR = 0;
+
 	radio::select();
 	radio::wcmd(CC1101::SIDLE);
 	radio::release();
-
-	WDTCSR = 0;
 
 	WDTInterrupt::fire_ = false;
 	PCINT0Interrupt::fire_ = false;
