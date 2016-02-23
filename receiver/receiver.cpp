@@ -8,18 +8,14 @@ extern "C" {
 };
 
 #include <port.hpp>
-#include <usi.hpp>
 #include <radio.hpp>
 #include <interrupt/PCINT0.hpp>
 #include <sensorvalue.hpp>
-#include <uart.hpp>
 #include <common.hpp>
 #include <packet.hpp>
 #include "receiver.hpp"
 #include "autoconfig.hpp"
-
-typedef Uart<Pin<Port<B>, 0>, 5> txuart_t;
-static txuart_t txuart;
+#include "rfc2045.h"
 
 static unsigned short magic;
 static aes128_ctx_t aes_ctx;
@@ -54,22 +50,21 @@ void init()
 
 static void txchr(unsigned char chr)
 {
-	while (!txuart.tx(chr)) {
+	while (!usart::tx(chr)) {
 	}
-}
-
-static void txbyte(unsigned char byte)
-{
-	static const char nibble[] PROGMEM = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-	txchr(pgm_read_byte(&nibble[byte >> 4]));
-	txchr(pgm_read_byte(&nibble[byte & 15]));
 }
 
 static void txdata(unsigned char* data, unsigned char len)
 {
-	for (;len > 0; --len) {
-		txbyte(*data++);
+	uint8_t b64[32];
+
+	uint8_t l = RFC2045::encode(data, len, b64);
+
+	for (uint8_t i = 0; i < l; ++i) {
+		txchr(b64[i]);
 	}
+
+	txchr('\r');
 	txchr('\n');
 }
 
@@ -89,7 +84,7 @@ static void receive()
 				return;
 			}
 
-			unsigned char* s = packet.raw + 4;
+			unsigned char* s = packet.raw + 2;
 			unsigned char* e = packet.raw + packet.len;
 			char rssi = packet.rssi;
 			unsigned char lqi = packet.lqi;
@@ -121,32 +116,31 @@ static void receive_loop()
 }
 
 /*{{{ uart */
-static void setup_uart()
+ISR(USART_RX_vect)
 {
-	TCCR1A = 0;
-	TCCR1B = _BV(WGM12) | _BV(CS11);
-	TIMSK1 = _BV(OCIE1A);
-	OCR1A = 26;
-
-	txuart_t::Pin::mode(OUTPUT);
-	txuart_t::Pin::set();
+	usart::rx_ready();
 }
 
-ISR(TIM1_COMPA_vect)
+ISR(USART_UDRE_vect)
 {
-	txuart.tx_int();
+	usart::tx_ready();
 }/*}}}*/
 
 int main()
 {
 	init();
 
-	setup_uart();
+	usart::init();
 
-	GIMSK |= _BV(PCIE0);
+	PCICR |= _BV(PCIE0);
 	PCMSK0 |= _BV(radio::USI::DI::pin);
 
 	sei();
 
 	receive_loop();
 }
+
+template<>
+usart::rxfifo_t usart::rxfifo = usart::rxfifo_t();
+template<>
+usart::txfifo_t usart::txfifo = usart::txfifo_t();
