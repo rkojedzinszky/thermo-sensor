@@ -28,7 +28,6 @@ void Sensor::send()
 
 	radio::select();
 	_thermo_on(false);
-	radio::set(CC1101::WORCTRL, 0x79);
 	radio::set(CC1101::MCSM0, 0x30);
 	radio::set(CC1101::IOCFG1, 0x06);
 	radio::wcmd(CC1101::STX);

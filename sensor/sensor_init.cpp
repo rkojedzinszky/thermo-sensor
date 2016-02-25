@@ -6,6 +6,24 @@
 #include "sensor.hpp"
 #include "autoconfig.hpp"
 
+static uint8_t getseed()
+{
+	VCC vcc;
+
+	TCCR0B = _BV(CS00);
+
+	WDTCR = _BV(WDIE);
+
+	set_sleep_mode(SLEEP_MODE_IDLE);
+	sleep_mode();
+
+	WDTCR = 0;
+
+	uint16_t voltage = vcc.read_voltage();
+
+	return TCNT0 ^ (voltage & 0xff) ^ (voltage >> 8);
+}
+
 static bool check_reset()
 {
 	radio::USI::DO::mode(INPUT);
@@ -45,6 +63,8 @@ void Sensor::init()
 		autoconfig(config);
 	}
 
+	lfsr.set(getseed() ^ config.id());
+
 	radio::select();
 
 	for (auto c = config.radioconfig(); c->reg_ != 0xff; ++c) {
@@ -54,6 +74,7 @@ void Sensor::init()
 	radio::setup_for_tx();
 
 	radio::set(CC1101::IOCFG0, 0x06);
+	radio::set(CC1101::WORCTRL, 0x7a);
 
 	radio::release();
 

@@ -3,24 +3,23 @@
 #include <interrupt/PCINT0.hpp>
 #include "sensor.hpp"
 
-static constexpr int delay_1 = 26;
+static constexpr int delay_1 = 24;
 static constexpr int delay_2 = 2;
 
-static constexpr unsigned int delay_1h = (delay_1 * 1083) >> 8;
-static constexpr unsigned int delay_1l = (delay_1 * 1083) & 0xff;
+static constexpr int delay_multiplier = 1000 / 30;
 
-static constexpr unsigned int delay_2h = (delay_2 * 1083) >> 8;
-static constexpr unsigned int delay_2l = (delay_2 * 1083) & 0xff;
+static constexpr unsigned int delay_1_ticks = delay_1 * delay_multiplier;
+static constexpr unsigned int delay_2_ticks = delay_2 * delay_multiplier;
 
 void Sensor::loop()
 {
 	PCMSK = _BV(radio::USI::DI::pin);
 
 	for (;;) {
+		uint16_t ticks = delay_1_ticks + lfsr.get();
 		radio::select();
-		radio::set(CC1101::WOREVT1, delay_1h);
-		radio::set(CC1101::WOREVT0, delay_1l);
-		radio::set(CC1101::WORCTRL, 0x71);
+		radio::set(CC1101::WOREVT1, ticks >> 8);
+		radio::set(CC1101::WOREVT0, ticks & 0xff);
 		radio::set(CC1101::IOCFG1, 0xa4);
 		radio::wcmd(CC1101::SPWD);
 		radio::release();
@@ -32,8 +31,8 @@ void Sensor::loop()
 
 		radio::select();
 		_thermo_on(true);
-		radio::set(CC1101::WOREVT1, delay_2h);
-		radio::set(CC1101::WOREVT0, delay_2l);
+		radio::set(CC1101::WOREVT1, delay_2_ticks >> 8);
+		radio::set(CC1101::WOREVT0, delay_2_ticks & 0xff);
 		radio::set(CC1101::MCSM0, 0x38);
 		radio::wcmd(CC1101::SPWD);
 		radio::release();
