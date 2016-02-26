@@ -3,7 +3,7 @@
 #include <interrupt/PCINT0.hpp>
 #include "sensor.hpp"
 
-static constexpr int delay_1 = 18;
+static constexpr int delay_1 = 20;
 static constexpr int delay_2 = 2;
 
 static constexpr int delay_multiplier = 1000 / 30;
