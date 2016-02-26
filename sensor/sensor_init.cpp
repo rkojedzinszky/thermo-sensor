@@ -6,7 +6,7 @@
 #include "sensor.hpp"
 #include "autoconfig.hpp"
 
-static uint8_t getseed()
+static uint16_t getseed()
 {
 	VCC vcc;
 
@@ -21,7 +21,7 @@ static uint8_t getseed()
 
 	uint16_t voltage = vcc.read_voltage();
 
-	return TCNT0 ^ (voltage & 0xff) ^ (voltage >> 8);
+	return voltage + TCNT0;
 }
 
 static bool check_reset()
@@ -63,7 +63,7 @@ void Sensor::init()
 		autoconfig(config);
 	}
 
-	lfsr.set(getseed() ^ config.id());
+	lfsr.set(getseed() ^ (config.id() << 8));
 
 	radio::select();
 
