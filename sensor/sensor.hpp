@@ -29,7 +29,7 @@ private:
 	unsigned short magic_;
 	unsigned char id_;
 	aes128_ctx_t aes_ctx_;
-	LFSR<7> lfsr;
+	LFSR lfsr;
 };
 
 static inline void _thermo_on(bool on)

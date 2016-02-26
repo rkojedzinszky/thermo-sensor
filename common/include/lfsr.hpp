@@ -2,34 +2,33 @@
 
 #include <stdint.h>
 
-template <int N>
 class LFSR {
-	uint8_t reg_;
+	uint16_t reg_ = 1;
 public:
-	LFSR(uint8_t seed = 1) : reg_(seed) { }
-
-	static constexpr int bits() {
-		return N;
-	}
-
-	void set(uint8_t val) {
-		reg_ = val & ((1 << N) - 1);
-		if (reg_ == 0) {
-			reg_ = 1;
+	void set(uint16_t reg) {
+		if (reg != 0) {
+			reg_ = reg;
 		}
 	}
 
-	uint8_t get() {
+	uint16_t get() {
 		asm volatile(
-				"ldi r24, %1\n"
-				"sbrc %0, 0\n"
-				"eor %0, r24\n"
-				"sbrc %0, 1\n"
-				"eor %0, r24\n"
-				"asr %0\n"
+				"ldi r23, 1\n"
+				"clr __tmp_reg__\n"
+				"sbrc %A0, 5\n"
+				"eor __tmp_reg__, r23\n"
+				"sbrc %A0, 3\n"
+				"eor __tmp_reg__, r23\n"
+				"sbrc %A0, 2\n"
+				"eor __tmp_reg__, r23\n"
+				"sbrc %A0, 0\n"
+				"eor __tmp_reg__, r23\n"
+				"lsr __tmp_reg__\n"
+				"ror %B0\n"
+				"ror %A0\n"
 				: "+r" (reg_)
-				: "i" (1 << N)
-				: "r24"
+				:
+				: "r23"
 			    );
 
 		return reg_;

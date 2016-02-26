@@ -3,7 +3,7 @@
 #include <interrupt/PCINT0.hpp>
 #include "sensor.hpp"
 
-static constexpr int delay_1 = 24;
+static constexpr int delay_1 = 18;
 static constexpr int delay_2 = 2;
 
 static constexpr int delay_multiplier = 1000 / 30;
@@ -16,7 +16,7 @@ void Sensor::loop()
 	PCMSK = _BV(radio::USI::DI::pin);
 
 	for (;;) {
-		uint16_t ticks = delay_1_ticks + lfsr.get();
+		uint16_t ticks = delay_1_ticks + (lfsr.get() & 0xff);
 		radio::select();
 		radio::set(CC1101::WOREVT1, ticks >> 8);
 		radio::set(CC1101::WOREVT0, ticks & 0xff);
