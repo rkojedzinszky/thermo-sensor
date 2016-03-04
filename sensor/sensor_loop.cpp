@@ -3,17 +3,16 @@
 #include <interrupt/PCINT0.hpp>
 #include "sensor.hpp"
 
-static constexpr int delay_1 = 26;
-static constexpr int delay_2 = 2;
+static constexpr int delay_1 = 28;
 
 static constexpr int delay_multiplier = 1000 / 30;
 
 static constexpr unsigned int delay_1_ticks = delay_1 * delay_multiplier;
-static constexpr unsigned int delay_2_ticks = delay_2 * delay_multiplier;
 
 void Sensor::loop()
 {
 	PCMSK = _BV(radio::USI::DI::pin);
+	thermo_on(true);
 
 	for (;;) {
 		uint16_t ticks = delay_1_ticks + (lfsr.get() & 0x3f);
@@ -21,19 +20,6 @@ void Sensor::loop()
 		radio::set(CC1101::WOREVT1, ticks >> 8);
 		radio::set(CC1101::WOREVT0, ticks & 0xff);
 		radio::set(CC1101::IOCFG1, 0xa4);
-		radio::wcmd(CC1101::SPWD);
-		radio::release();
-
-		GIMSK |= _BV(PCIE);
-		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-		sleep_mode();
-		GIMSK &= ~_BV(PCIE);
-
-		radio::select();
-		_thermo_on(true);
-		radio::set(CC1101::WOREVT1, delay_2_ticks >> 8);
-		radio::set(CC1101::WOREVT0, delay_2_ticks & 0xff);
-		radio::set(CC1101::MCSM0, 0x38);
 		radio::wcmd(CC1101::SPWD);
 		radio::release();
 

@@ -27,9 +27,7 @@ void Sensor::send()
 	::aes128_enc(packet.raw, &aes_ctx_);
 
 	radio::select();
-	_thermo_on(false);
-	radio::set(CC1101::MCSM0, 0x30);
-	radio::set(CC1101::IOCFG1, 0x06);
+	radio::set(CC1101::IOCFG1, 0x86);
 	radio::wcmd(CC1101::STX);
 	radio::write_txfifo(packet.raw, sizeof(packet.raw));
 }
