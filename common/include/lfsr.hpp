@@ -4,10 +4,11 @@
 
 class LFSR {
 	uint16_t reg_ = 1;
+	uint16_t xor_ = 1;
 public:
 	void set(uint16_t reg) {
 		if (reg != 0) {
-			reg_ = reg;
+			reg_ = xor_ = reg;
 		}
 	}
 
@@ -31,7 +32,7 @@ public:
 				: "r23"
 			    );
 
-		return reg_;
+		return reg_ ^ xor_;
 	}
 };
 
