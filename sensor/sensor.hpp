@@ -44,3 +44,5 @@ static inline void thermo_on(bool on)
 	radio::wcmd(CC1101::SPWD);
 	radio::release();
 }
+
+static constexpr int delay_multiplier = 1000 / 29;

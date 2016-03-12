@@ -5,8 +5,6 @@
 
 static constexpr int delay_1 = 28;
 
-static constexpr int delay_multiplier = 1000 / 30;
-
 static constexpr unsigned int delay_1_ticks = delay_1 * delay_multiplier;
 
 void Sensor::loop()
