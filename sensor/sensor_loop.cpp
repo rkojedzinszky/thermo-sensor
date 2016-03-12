@@ -6,8 +6,6 @@
 static constexpr int delay_1 = 26;
 static constexpr int delay_2 = 2;
 
-static constexpr int delay_multiplier = 1000 / 30;
-
 static constexpr unsigned int delay_1_ticks = delay_1 * delay_multiplier;
 static constexpr unsigned int delay_2_ticks = delay_2 * delay_multiplier;
 
