@@ -3,7 +3,7 @@
 #include <interrupt/PCINT0.hpp>
 #include "sensor.hpp"
 
-static constexpr int delay_1 = 28;
+static constexpr int delay_1 = 26;
 
 static constexpr unsigned int delay_1_ticks = delay_1 * delay_multiplier;
 
@@ -13,7 +13,7 @@ void Sensor::loop()
 	thermo_on(true);
 
 	for (;;) {
-		uint16_t ticks = delay_1_ticks + (lfsr.get() & 0x3f);
+		uint16_t ticks = delay_1_ticks + (lfsr.get() & 0x7f);
 		radio::select();
 		radio::set(CC1101::WOREVT1, ticks >> 8);
 		radio::set(CC1101::WOREVT0, ticks & 0xff);
