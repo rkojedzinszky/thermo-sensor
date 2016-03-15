@@ -3,8 +3,8 @@
 #include <interrupt/PCINT0.hpp>
 #include "sensor.hpp"
 
-// 11 + [0, 4) + 2 seconds = ~15 seconds
-static constexpr int delay_1 = 11;
+// 17 + [0, 2) + 2 seconds = ~20 seconds
+static constexpr int delay_1 = 17;
 static constexpr int delay_2 = 2;
 
 static constexpr unsigned int delay_1_ticks = delay_1 * delay_multiplier;
@@ -15,7 +15,7 @@ void Sensor::loop()
 	PCMSK = _BV(radio::USI::DI::pin);
 
 	for (;;) {
-		uint16_t ticks = delay_1_ticks + (lfsr.get() & 0x7f);
+		uint16_t ticks = delay_1_ticks + (lfsr.get() & 0x3f);
 		radio::select();
 		radio::set(CC1101::WOREVT1, ticks >> 8);
 		radio::set(CC1101::WOREVT0, ticks & 0xff);
