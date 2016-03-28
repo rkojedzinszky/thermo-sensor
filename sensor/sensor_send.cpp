@@ -12,12 +12,12 @@ void Sensor::send()
 
 	short hum, temp;
 	if (am2302::read(hum, temp)) {
-		dp += SensorValue<Humidity>::encode(hum, dp);
-		dp += SensorValue<Temperature>::encode(temp, dp);
+		dp += SensorValue::AM2302Humidity::encode(hum, dp);
+		dp += SensorValue::AM2302Temperature::encode(temp, dp);
 	}
 
 	unsigned vl = vccreader.read_voltage();
-	dp += SensorValue<Power>::encode(vl, dp);
+	dp += SensorValue::VCC::encode(vl, dp);
 
 	packet.magic = magic_;
 	packet.len = dp - packet.raw;

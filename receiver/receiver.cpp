@@ -88,8 +88,8 @@ static void receive()
 			unsigned char* e = packet.raw + packet.len;
 			char rssi = packet.rssi;
 			unsigned char lqi = packet.lqi;
-			e += SensorValue<RSSI>::encode(static_cast<int>(rssi) - 148, e);
-			e += SensorValue<LQI>::encode(static_cast<int>(lqi & 0x7f), e);
+			e += SensorValue::RSSI::encode(static_cast<int>(rssi), e);
+			e += SensorValue::LQI::encode(static_cast<int>(lqi & 0x7f), e);
 
 			packet.len = e - s;
 
