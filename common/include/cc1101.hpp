@@ -128,6 +128,8 @@ public:
 	static void release()
 	{
 		CSn::set();
+		USI::DO::set();
+		USI::DO::mode(INPUT);
 	}
 
 	static void write_txfifo(uint8_t* values, uint8_t len);
@@ -138,6 +140,7 @@ public:
 template <class USI_t, class CSn_t>
 uint8_t CC1101<USI_t, CSn_t>::select()
 {
+	USI::DO::mode(OUTPUT);
 	CSn::clear();
 	return USI::DI::loop_until_clear(1000);
 }

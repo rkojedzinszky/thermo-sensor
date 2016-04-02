@@ -7,7 +7,6 @@ class USI {
 public:
 	static void setup() {
 		DI::mode(INPUT);
-		DO::mode(OUTPUT);
 		USCK::mode(OUTPUT);
 		USCK::clear();
 	}
