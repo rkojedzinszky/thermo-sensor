@@ -12,7 +12,7 @@ static uint8_t gen_id()
 	VCC vccreader;
 	union {
 		struct {
-			short thum, ttemp;
+			uint16_t thum, ttemp;
 			short vcc;
 			uint8_t timer;
 		};
@@ -21,7 +21,6 @@ static uint8_t gen_id()
 
 	TCCR0B = _BV(CS00);
 
-	thermo_on(true);
 	WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
 	set_sleep_mode(SLEEP_MODE_IDLE);
 	sleep_mode();
@@ -29,8 +28,8 @@ static uint8_t gen_id()
 	data.timer = TCNT0;
 	TCCR0B = 0;
 
-	am2302::read(data.thum, data.ttemp);
-	thermo_on(false);
+	htu21d::read_temp(data.ttemp);
+	htu21d::read_hum(data.thum);
 	data.vcc = vccreader.read_voltage();
 
 	WDTInterrupt::fire_ = false;

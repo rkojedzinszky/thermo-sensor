@@ -10,10 +10,13 @@ void Sensor::send()
 	VCC vccreader;
 	unsigned char* dp = packet.data;
 
-	short hum, temp;
-	if (am2302::read(hum, temp)) {
-		dp += SensorValue::AM2302Humidity::encode(hum, dp);
-		dp += SensorValue::AM2302Temperature::encode(temp, dp);
+	USICR = 0;
+	uint16_t d;
+	if (htu21d::read_temp(d)) {
+		dp += SensorValue::HTU21DTemperature::encode(d, dp);
+	}
+	if (htu21d::read_hum(d)) {
+		dp += SensorValue::HTU21DHumidty::encode(d, dp);
 	}
 
 	unsigned vl = vccreader.read_voltage();

@@ -10,9 +10,6 @@ static constexpr unsigned int delay_1_ticks = delay_1 * delay_multiplier;
 
 void Sensor::loop()
 {
-	PCMSK = _BV(radio::USI::DI::pin);
-	thermo_on(true);
-
 	for (;;) {
 		uint16_t ticks = delay_1_ticks + (lfsr.get() & 0x3f);
 		radio::select();
@@ -22,6 +19,7 @@ void Sensor::loop()
 		radio::wcmd(CC1101::SPWD);
 		radio::release();
 
+		PCMSK = _BV(radio::USI::DI::pin);
 		GIMSK |= _BV(PCIE);
 		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 		sleep_mode();
@@ -29,6 +27,7 @@ void Sensor::loop()
 
 		send();
 
+		PCMSK = _BV(radio::USI::DI::pin);
 		GIMSK |= _BV(PCIE);
 		while (radio::USI::DI::is_set()) {
 			set_sleep_mode(SLEEP_MODE_PWR_DOWN);

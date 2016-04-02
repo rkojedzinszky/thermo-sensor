@@ -8,13 +8,12 @@ extern "C" {
 #include <port.hpp>
 #include <usi.hpp>
 #include <radio.hpp>
-#include <am2302.hpp>
+#include <htu21d.hpp>
 
-typedef AM2302<Pin<Port<B>, 4>> am2302;
+typedef HTU21D<Pin<Port<B>, 4>, Pin<Port<B>, 1>> htu21d;
 typedef Radio<CC1101::CC1101<USI, Pin<Port<B>, 3>>> radio;
 
 extern template class CC1101::CC1101<USI, Pin<Port<B>, 3>>;
-extern template class AM2302<Pin<Port<B>, 4>>;
 
 class Sensor {
 public:
@@ -31,18 +30,5 @@ private:
 	aes128_ctx_t aes_ctx_;
 	LFSR lfsr;
 };
-
-static inline void _thermo_on(bool on)
-{
-	radio::set(CC1101::IOCFG2, on ? 0x6f : 0x2e);
-}
-
-static inline void thermo_on(bool on)
-{
-	radio::select();
-	_thermo_on(on);
-	radio::wcmd(CC1101::SPWD);
-	radio::release();
-}
 
 static constexpr int delay_multiplier = 1000 / 29;

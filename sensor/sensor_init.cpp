@@ -42,6 +42,8 @@ static bool check_reset()
 
 void Sensor::init()
 {
+	htu21d::reset();
+
 	Config config;
 	config.read();
 
@@ -55,6 +57,9 @@ void Sensor::init()
 			sleep_mode();
 		}
 	}
+
+	htu21d::CL::set();
+	htu21d::DA::set();
 
 	radio::setup();
 	radio::setup_basic();
