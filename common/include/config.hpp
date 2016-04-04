@@ -46,7 +46,7 @@ public:
 
 private:
 	uint8_t calculate_crc() const {
-		return crc8_ccitt(data_.raw_, sizeof(data_));
+		return crc8_dallas(0, data_.raw_, sizeof(data_));
 	}
 
 	uint8_t crc8;

@@ -34,7 +34,7 @@ static uint8_t gen_id()
 
 	WDTInterrupt::fire_ = false;
 
-	return crc8_ccitt(data.raw, sizeof(data));
+	return crc8_dallas(0, data.raw, sizeof(data));
 }
 
 static void do_send(ConfigRequestPacket& packet)

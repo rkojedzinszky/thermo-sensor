@@ -2,5 +2,4 @@
 
 #include <avr/eeprom.h>
 
-uint8_t crc8_ccitt(const uint8_t* buf, uint8_t len);
-
+uint8_t crc8_dallas(uint8_t __crc, const uint8_t* __buf, uint8_t __len);
