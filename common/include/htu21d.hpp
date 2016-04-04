@@ -3,31 +3,13 @@
 #include <stdint.h>
 #include <avr/cpufunc.h>
 #include <avr/sleep.h>
-#include <util/crc16.h>
 #include <i2c.hpp>
+#include <common.hpp>
 
 // port state terminology:
 // low - output/low
 // high - output/high
 // input - input will pull-up
-
-static uint8_t
-_crc_update(uint8_t __crc, uint8_t __data)
-{
-    uint8_t __i, __pattern;
-    __asm__ __volatile__ (
-        "    eor    %0, %4" "\n\t"
-        "    ldi    %1, 8" "\n\t"
-        "    ldi    %2, 0x31" "\n\t"
-        "1:  lsl    %0" "\n\t"
-        "    brcc   2f" "\n\t"
-        "    eor    %0, %2" "\n\t"
-        "2:  dec    %1" "\n\t"
-        "    brne   1b" "\n\t"
-        : "=r" (__crc), "=d" (__i), "=d" (__pattern)
-        : "0" (__crc), "r" (__data));
-    return __crc;
-}
 
 template <typename CL_t, typename DA_t>
 class HTU21D {
@@ -144,11 +126,7 @@ bool HTU21D<CL_t, DA_t>::_read(uint8_t cmd, uint16_t& m)
 	buf[1] = i2c::recv_byte();
 	buf[2] = i2c::recv_byte(true);
 
-	uint8_t crc = 0;
-	crc = _crc_update(crc, buf[0]);
-	crc = _crc_update(crc, buf[1]);
-
-	if (crc != buf[2])
+	if (crc8_dallas(0, buf, 2) != buf[2])
 		return false;
 
 	m = buf[0] << 8 | buf[1];
