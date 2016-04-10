@@ -7,8 +7,10 @@ void Sensor::send()
 {
 	Radiopacket packet;
 
-	VCC vccreader;
 	unsigned char* dp = packet.data;
+
+	unsigned vl = VCC::read_voltage();
+	dp += SensorValue::VCC::encode(vl, dp);
 
 	USICR = 0;
 	uint16_t d;
@@ -18,9 +20,6 @@ void Sensor::send()
 	if (htu21d::read_hum(d)) {
 		dp += SensorValue::HTU21DHumidty::encode(d, dp);
 	}
-
-	unsigned vl = vccreader.read_voltage();
-	dp += SensorValue::VCC::encode(vl, dp);
 
 	packet.magic = magic_;
 	packet.len = dp - packet.raw;

@@ -68,8 +68,6 @@ void Sensor::init()
 		autoconfig(config);
 	}
 
-	lfsr.set(getseed() ^ (config.id() << 8));
-
 	radio::select();
 
 	for (auto c = config.radioconfig(); c->reg_ != 0xff; ++c) {
@@ -86,5 +84,7 @@ void Sensor::init()
 	magic_ = config.magic();
 	id_ = config.id();
 	::aes128_init(config.key(), &aes_ctx_);
+
+	lfsr.set(getseed() ^ (config.id() << 8));
 }
 
