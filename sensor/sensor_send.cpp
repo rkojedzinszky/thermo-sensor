@@ -7,17 +7,16 @@ void Sensor::send()
 {
 	Radiopacket packet;
 
-	VCC vccreader;
 	unsigned char* dp = packet.data;
+
+	unsigned vl = VCC::read_voltage();
+	dp += SensorValue::VCC::encode(vl, dp);
 
 	short hum, temp;
 	if (am2302::read(hum, temp)) {
 		dp += SensorValue::AM2302Humidity::encode(hum, dp);
 		dp += SensorValue::AM2302Temperature::encode(temp, dp);
 	}
-
-	unsigned vl = vccreader.read_voltage();
-	dp += SensorValue::VCC::encode(vl, dp);
 
 	packet.magic = magic_;
 	packet.len = dp - packet.raw;
