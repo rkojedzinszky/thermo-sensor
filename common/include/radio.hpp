@@ -44,6 +44,9 @@ inline void Radio<cc1101>::setup_basic()
 	cc1101::set(CC1101::MDMCFG2, 0x13);
 	cc1101::set(CC1101::DEVIATN, 0x27);
 
+	// fscal3 calibration
+	cc1101::set(CC1101::FSCAL3, 0xea);
+
 	// PATABLE
 	cc1101::set(CC1101::PATABLE, 0xc0);
 
@@ -88,7 +91,7 @@ inline void Radio<cc1101>::setup_for_tx()
 
 	// main radio control state machine configuration
 	cc1101::set(CC1101::MCSM1, 0x30);
-	cc1101::set(CC1101::MCSM0, 0x38);
+	cc1101::set(CC1101::MCSM0, 0x18);
 
 	calibrate();
 }
