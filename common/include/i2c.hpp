@@ -83,7 +83,6 @@ inline void I2C<CL_t, DA_t>::send_bit(bool bit)
 	CL::set();
 	while (CL::is_clear());
 	CL::clear();
-	_NOP();
 }
 
 template <typename CL_t, typename DA_t>
@@ -93,7 +92,6 @@ inline bool I2C<CL_t, DA_t>::recv_bit()
 	while (CL::is_clear());
 	bool bit = DA::is_set();
 	CL::clear();
-	_NOP();
 
 	return bit;
 }
