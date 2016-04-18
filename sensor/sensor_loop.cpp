@@ -3,8 +3,8 @@
 #include <interrupt/PCINT0.hpp>
 #include "sensor.hpp"
 
-// 17 + [0, 2) + 2 seconds = ~20 seconds
-static constexpr int delay_1 = 17;
+// 26 + 2 + [0, 2) seconds = [28, 30) seconds
+static constexpr int delay_1 = 26;
 static constexpr int delay_2 = 2;
 
 static constexpr unsigned int delay_1_ticks = delay_1 * delay_multiplier;
