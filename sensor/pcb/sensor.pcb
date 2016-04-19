@@ -791,7 +791,7 @@ Via[825.00mil 800.00mil 46.00mil 20.00mil 0.0000 20.00mil "" "auto"]
 Via[800.00mil 875.00mil 46.00mil 20.00mil 0.0000 20.00mil "" "auto"]
 Via[775.00mil 1100.00mil 125.00mil 20.00mil 0.0000 85.00mil "" ""]
 
-Element["" "JUMPER2" "J2" "unknown" 350.00mil 775.00mil -25.00mil -100.00mil 0 100 ""]
+Element["" "JUMPER2" "J2" "unknown" 350.00mil 775.00mil -25.00mil -125.00mil 0 100 ""]
 (
 	Attribute("device" "JUMPER")
 	Attribute("manufacturer" "unknown")
@@ -945,7 +945,7 @@ Element["" "0603" "R3" "1K" 150.00mil 825.00mil -30.91mil 18.50mil 0 100 ""]
 
 	)
 
-Element["" "BS-5" "B1" "unknown" 150.00mil 475.00mil 80.00mil 0.0000 1 100 ""]
+Element["" "BS-5" "B1" "unknown" 150.00mil 475.00mil 145.00mil -25.00mil 0 100 ""]
 (
 	Attribute("device" "BATTERY")
 	Attribute("manufacturer" "unknown")
