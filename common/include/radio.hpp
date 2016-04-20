@@ -47,6 +47,9 @@ inline void Radio<cc1101>::setup_basic()
 	// PATABLE
 	cc1101::set(CC1101::PATABLE, 0xc0);
 
+	// enable WOR timer
+	cc1101::set(CC1101::WORCTRL, 0x7a);
+
 	calibrate();
 
 	cc1101::release();

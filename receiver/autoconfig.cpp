@@ -7,7 +7,7 @@
 #include "autoconfig.hpp"
 #include <packet.hpp>
 
-static uint8_t autoconfig_timeout = 2;
+static uint8_t autoconfig_timeout = 3;
 
 static void autoconfig_wdt()
 {

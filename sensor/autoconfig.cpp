@@ -7,6 +7,10 @@
 #include <packet.hpp>
 #include <vcc.hpp>
 
+static constexpr int delay = 10;
+
+static constexpr unsigned int delay_ticks = delay * delay_multiplier;
+
 static uint8_t gen_id()
 {
 	VCC vccreader;
@@ -21,13 +25,15 @@ static uint8_t gen_id()
 
 	TCCR0B = _BV(CS00);
 
-	WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
+	wdt_reset();
+	WDTCR = _BV(WDIE) | _BV(WDP0); // 32 msecs
 	set_sleep_mode(SLEEP_MODE_IDLE);
 	sleep_mode();
 	WDTCR = 0;
 	data.timer = TCNT0;
 	TCCR0B = 0;
 
+	USICR = 0;
 	htu21d::read_temp(data.ttemp);
 	htu21d::read_hum(data.thum);
 	data.vcc = vccreader.read_voltage();
@@ -40,6 +46,7 @@ static uint8_t gen_id()
 static void do_send(ConfigRequestPacket& packet)
 {
 	radio::select();
+	radio::set(CC1101::IOCFG1, 0x07);
 	radio::wcmd(CC1101::STX);
 	radio::write_txfifo(&packet.len_, packet.len_ + 1);
 }
@@ -57,9 +64,7 @@ static bool do_receive(Config& config)
 		return true;
 	}
 
-	radio::sidle();
 	radio::wcmd(CC1101::SFRX);
-	radio::wcmd(CC1101::SRX);
 	radio::release();
 
 	return false;
@@ -67,19 +72,19 @@ static bool do_receive(Config& config)
 
 static bool receive_with_timeout(Config& config)
 {
-	WDTCR = _BV(WDIE) | _BV(WDP1) | _BV(WDP0); // 0.125s
+	wdt_reset();
+	WDTCR = _BV(WDIE) | _BV(WDP0); // 32msec
 
 	// wait for packet with timeout
-	WDTInterrupt::fire_ = false;
-	while (WDTInterrupt::fire_ == false) {
-		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-		sleep_mode();
+	PCMSK = _BV(radio::USI::DI::pin);
+	GIMSK |= _BV(PCIE);
+	set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+	sleep_mode();
+	GIMSK &= ~_BV(PCIE);
+	WDTCR = 0;
 
-		if (radio::USI::DI::is_set()) {
-			if (do_receive(config)) {
-				return true;
-			}
-		}
+	if (radio::USI::DI::is_set()) {
+		return do_receive(config);
 	}
 
 	return false;
@@ -88,7 +93,6 @@ static bool receive_with_timeout(Config& config)
 static void radio_off()
 {
 	radio::select();
-	radio::sidle();
 	radio::wcmd(CC1101::SPWD);
 	radio::release();
 }
@@ -97,9 +101,6 @@ static void do_autoconfig(Config& config)
 {
 	ConfigRequestPacket req(config.id());
 
-	PCMSK = _BV(radio::USI::DI::pin);
-	GIMSK |= _BV(PCIE);
-
 	for (;;) {
 		do_send(req);
 
@@ -107,23 +108,22 @@ static void do_autoconfig(Config& config)
 			break;
 		}
 
-		radio_off();
+		radio::select();
+		radio::set(CC1101::IOCFG1, 0xa4);
+		radio::wcmd(CC1101::SPWD);
+		radio::release();
 
-		WDTCR = _BV(WDIE) | _BV(WDP3); // 4 secs
-		WDTInterrupt::fire_ = false;
-
-		while (WDTInterrupt::fire_ == false) {
-			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-			sleep_mode();
-		}
+		PCMSK = _BV(radio::USI::DI::pin);
+		GIMSK |= _BV(PCIE);
+		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		sleep_mode();
+		GIMSK &= ~_BV(PCIE);
 	}
 
 	GIMSK &= ~_BV(PCIE);
 	WDTCR = 0;
 
-	radio::select();
-	radio::sidle();
-	radio::release();
+	radio_off();
 
 	WDTInterrupt::fire_ = false;
 	PCINT0Interrupt::fire_ = false;
@@ -136,11 +136,13 @@ void autoconfig(Config& config)
 	}
 
 	radio::select();
+	radio::set(CC1101::WOREVT1, delay_ticks >> 8);
+	radio::set(CC1101::WOREVT0, delay_ticks & 0xff);
 	radio::set(CC1101::PKTCTRL1, 0x09);
 	radio::set(CC1101::PKTCTRL0, 0x45);
-	radio::set(CC1101::IOCFG1, 0x07);
 	radio::set(CC1101::IOCFG0, 0x06);
-	radio::set(CC1101::MCSM1, 0x0f);
+	radio::set(CC1101::MCSM2, 0x01);
+	radio::set(CC1101::MCSM1, 0x03);
 	radio::set(CC1101::ADDR, config.id());
 	radio::release();
 

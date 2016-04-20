@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/sleep.h>
+#include <avr/interrupt.h>
 #include <avr/cpufunc.h>
 #include <config.hpp>
 #include <vcc.hpp>
@@ -12,6 +13,7 @@ static uint16_t getseed()
 
 	TCCR0B = _BV(CS00);
 
+	wdt_reset();
 	WDTCR = _BV(WDIE);
 
 	set_sleep_mode(SLEEP_MODE_IDLE);
@@ -36,6 +38,7 @@ static bool check_reset()
 	bool ret = radio::USI::DO::is_clear();
 
 	radio::USI::USCK::mode(INPUT);
+	radio::USI::USCK::set();
 
 	return ret;
 }
@@ -52,6 +55,7 @@ void Sensor::init()
 	if (do_reset) {
 		config.invalidate();
 
+		cli();
 		for (;;) {
 			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 			sleep_mode();
@@ -77,8 +81,8 @@ void Sensor::init()
 	radio::setup_for_tx();
 
 	radio::set(CC1101::IOCFG0, 0x06);
-	radio::set(CC1101::WORCTRL, 0x7a);
 
+	radio::wcmd(CC1101::SPWD);
 	radio::release();
 
 	magic_ = config.magic();

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <avr/wdt.h>
+
 extern "C" {
 #include <aes/aes.h>
 };
