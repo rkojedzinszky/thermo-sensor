@@ -52,10 +52,18 @@ void Sensor::init()
 
 	bool do_reset = check_reset();
 
+	radio::setup();
+
 	if (do_reset) {
+		cli();
+
 		config.invalidate();
 
-		cli();
+		radio::select();
+		radio::set(CC1101::IOCFG0, 0x6f);
+		radio::wcmd(CC1101::SPWD);
+		radio::release();
+
 		for (;;) {
 			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 			sleep_mode();
@@ -65,7 +73,6 @@ void Sensor::init()
 	htu21d::CL::set();
 	htu21d::DA::set();
 
-	radio::setup();
 	radio::setup_basic();
 
 	if (!config.valid()) {
