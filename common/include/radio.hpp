@@ -59,8 +59,8 @@ template <typename cc1101>
 inline void Radio<cc1101>::setup_common()
 {
 	// disable GDO[0,2] pins
-	cc1101::set(CC1101::IOCFG2, 0x2f);
-	cc1101::set(CC1101::IOCFG0, 0x2f);
+	cc1101::set(CC1101::IOCFG2, 0x2e);
+	cc1101::set(CC1101::IOCFG0, 0x2e);
 
 	// fix packet length
 	cc1101::set(CC1101::PKTLEN, 16);
