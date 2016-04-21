@@ -143,7 +143,7 @@ refdes=C2
 T 55200 43800 5 10 0 0 270 0 1
 symversion=0.1
 T 54500 44000 5 10 0 0 0 0 1
-footprint=CAP-254P-850D
+footprint=CAP-350P-850D
 T 54400 43200 5 10 1 1 90 0 1
 value=1000uF
 }

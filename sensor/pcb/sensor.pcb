@@ -885,21 +885,6 @@ Element["" "0603" "R2" "5.6K" 350.00mil 300.00mil 43.50mil -31.50mil 0 100 ""]
 
 	)
 
-Element["" "CAP-254P-850D" "C2" "1000uF" 175.00mil 1100.00mil 35.50mil 34.28mil 0 100 ""]
-(
-	Attribute("device" "POLARIZED_CAPACITOR")
-	Attribute("manufacturer" "unknown")
-	Attribute("manufacturer_part_number" "unknown")
-	Attribute("vendor" "unknown")
-	Attribute("vendor_part_number" "unknown")
-	Pin[-50.00mil 0.0000 60.00mil 20.00mil 80.00mil 35.00mil "+" "1" ""]
-	Pin[50.00mil 0.0000 60.00mil 20.00mil 80.00mil 35.00mil "-" "2" ""]
-	ElementLine [-59.00mil 45.00mil -41.00mil 45.00mil 10.00mil]
-	ElementLine [-50.00mil 36.00mil -50.00mil 54.00mil 10.00mil]
-	ElementArc [0.0000 0.0000 4.2000mm 4.2000mm 0 360 10.00mil]
-
-	)
-
 Element["" "0603" "D1" "unknown" 100.00mil 125.00mil -31.50mil 18.50mil 0 100 ""]
 (
 	Attribute("device" "LED")
@@ -990,6 +975,21 @@ Element["" "0603" "R1" "5.6K" 200.00mil 125.00mil -29.73mil 18.50mil 0 100 ""]
 	Pad[-25.59mil -4.92mil -25.59mil 4.92mil 29.52mil 20.00mil 35.52mil "2" "2" "square"]
 
 	)
+
+Element["" "CAP-350P-850D" "C2" "1000uF" 175.00mil 1100.00mil 35.50mil 34.28mil 0 100 ""]
+(
+	Attribute("device" "POLARIZED_CAPACITOR")
+	Attribute("manufacturer" "unknown")
+	Attribute("manufacturer_part_number" "unknown")
+	Attribute("vendor" "unknown")
+	Attribute("vendor_part_number" "unknown")
+	Pin[-1.7500mm 0.0000 60.00mil 20.00mil 80.00mil 35.00mil "+" "1" ""]
+	Pin[1.7500mm 0.0000 60.00mil 20.00mil 80.00mil 35.00mil "-" "2" ""]
+	ElementLine [-78.00mil 45.00mil -60.00mil 45.00mil 10.00mil]
+	ElementLine [-1.7500mm 36.00mil -1.7500mm 54.00mil 10.00mil]
+	ElementArc [0.0000 0.0000 4.2000mm 4.2000mm 0 360 10.00mil]
+
+	)
 Layer(1 "top")
 (
 	Line[927.50mil 572.50mil 875.00mil 625.00mil 25.00mil 20.00mil "clearline,auto"]
@@ -1027,9 +1027,6 @@ Layer(1 "top")
 	Line[770.00mil 1095.00mil 775.00mil 1100.00mil 25.00mil 20.00mil "clearline"]
 	Line[875.00mil 625.00mil 875.00mil 995.00mil 25.00mil 20.00mil "clearline"]
 	Line[875.00mil 995.00mil 775.00mil 1095.00mil 25.00mil 20.00mil "clearline"]
-	Line[175.59mil 20.9400mm 175.59mil 26.6550mm 25.00mil 20.00mil "clearline"]
-	Line[175.59mil 26.6550mm 125.00mil 1100.00mil 25.00mil 20.00mil "clearline"]
-	Line[225.00mil 1100.00mil 775.00mil 1100.00mil 25.00mil 20.00mil "clearline"]
 	Line[775.00mil 75.00mil 725.00mil 125.00mil 10.00mil 20.00mil "clearline"]
 	Line[725.00mil 125.00mil 400.00mil 125.00mil 10.00mil 20.00mil "clearline"]
 	Line[400.00mil 125.00mil 350.00mil 75.00mil 10.00mil 20.00mil "clearline"]
@@ -1042,6 +1039,9 @@ Layer(1 "top")
 	Line[150.00mil 25.00mil 75.00mil 100.00mil 10.00mil 20.00mil "clearline"]
 	Line[75.00mil 100.00mil 75.00mil 124.41mil 10.00mil 20.00mil "clearline"]
 	Line[75.00mil 124.41mil 74.41mil 125.00mil 10.00mil 20.00mil "clearline"]
+	Line[175.59mil 20.9400mm 175.59mil 26.1750mm 25.00mil 20.00mil "clearline"]
+	Line[175.59mil 26.1750mm 2.6950mm 1100.00mil 25.00mil 20.00mil "clearline"]
+	Line[6.1950mm 1100.00mil 775.00mil 1100.00mil 25.00mil 20.00mil "clearline"]
 )
 Layer(2 "bottom")
 (
@@ -1052,7 +1052,6 @@ Layer(2 "bottom")
 	Line[775.00mil 325.00mil 825.00mil 325.00mil 10.00mil 20.00mil "clearline"]
 	Line[775.00mil 625.00mil 775.00mil 854.00mil 10.00mil 20.00mil "clearline"]
 	Line[775.00mil 854.00mil 798.00mil 877.00mil 10.00mil 20.00mil "clearline"]
-	Line[230.00mil 475.00mil 230.00mil 1095.00mil 25.00mil 20.00mil "clearline"]
 	Line[575.00mil 175.00mil 625.00mil 225.00mil 10.00mil 20.00mil "clearline"]
 	Line[625.00mil 225.00mil 625.00mil 575.00mil 10.00mil 20.00mil "clearline"]
 	Line[625.00mil 575.00mil 675.00mil 625.00mil 10.00mil 20.00mil "clearline"]
@@ -1063,6 +1062,8 @@ Layer(2 "bottom")
 	Line[725.00mil 25.00mil 925.00mil 25.00mil 10.00mil 20.00mil "clearline"]
 	Line[925.00mil 25.00mil 925.00mil 275.00mil 10.00mil 20.00mil "clearline"]
 	Line[925.00mil 275.00mil 875.00mil 325.00mil 10.00mil 20.00mil "clearline"]
+	Line[230.59mil 12.0500mm 230.59mil 27.6020mm 25.00mil 20.00mil "clearline"]
+	Line[230.59mil 27.6020mm 6.1950mm 1100.00mil 25.00mil 20.00mil "clearline"]
 )
 Layer(3 "silk")
 (
