@@ -9,7 +9,6 @@ rm -f "$ZIPFILE"
 sed -e "s/SENSOR_VERSION/$V/g" sensor.pcb > "$TMP/sensor.pcb"
 cd "$TMP"
 pcb -x gerber --gerberfile sensor sensor.pcb
-rm -f sensor.pcb
 zip -q9 "$ZIPFILE" sensor*
 cd /
 rm -rf "$TMP"
