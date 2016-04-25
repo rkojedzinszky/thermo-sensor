@@ -1061,7 +1061,9 @@ Layer(3 "silk")
 )
 Layer(4 "silk")
 (
-	Text[150.00mil 1025.00mil 0 69 "SENSOR_VERSION" "clearline"]
+	Text[150.00mil  925.00mil 0 80 "TH Sensor" "clearline"]
+	Text[150.00mil  975.00mil 0 80 "SENSOR_VER1" "clearline"]
+	Text[150.00mil 1025.00mil 0 80 "SENSOR_VER2" "clearline"]
 )
 NetList()
 (
