@@ -808,7 +808,7 @@ Element["" "JUMPER2" "J1" "unknown" 75.00mil 825.00mil -50.00mil 50.00mil 0 100 
 
 	)
 
-Element["" "0603" "C1" "unknown" 350.00mil 700.00mil -80.91mil -31.50mil 0 100 ""]
+Element["" "0603" "C1" "unknown" 350.00mil 700.00mil 44.09mil -31.50mil 0 100 ""]
 (
 	Attribute("device" "CAPACITOR")
 	Attribute("manufacturer" "unknown")
@@ -832,7 +832,7 @@ Element["" "0603" "R3" "1K" 100.00mil 125.00mil 19.09mil -31.50mil 0 100 ""]
 
 	)
 
-Element["" "0603" "R2" "5.6K" 350.00mil 650.00mil -81.50mil -31.50mil 0 100 ""]
+Element["" "0603" "R2" "5.6K" 350.00mil 650.00mil 43.50mil -31.50mil 0 100 ""]
 (
 	Attribute("device" "RESISTOR")
 	Attribute("manufacturer" "unknown")
@@ -890,7 +890,7 @@ Element["" "CAP-350P-850D" "C2" "1000uF" 4.2900mm 450.00mil 35.50mil 34.28mil 0 
 
 	)
 
-Element["" "TDFN-Maxim-6" "U2" "unknown" 350.00mil 800.00mil -73.00mil 62.00mil 0 100 ""]
+Element["" "TDFN-Maxim-6" "U2" "unknown" 350.00mil 800.00mil -48.00mil 62.00mil 0 100 ""]
 (
 	Attribute("device" "SHT21")
 	Attribute("manufacturer" "unknown")
@@ -912,7 +912,7 @@ Element["" "TDFN-Maxim-6" "U2" "unknown" 350.00mil 800.00mil -73.00mil 62.00mil 
 
 	)
 
-Element["" "HEADER8_2" "H1" "unknown" 825.00mil 400.00mil -375.00mil -100.00mil 0 100 ""]
+Element["" "HEADER8_2" "H1" "unknown" 825.00mil 400.00mil 0.0000 150.00mil 0 100 ""]
 (
 	Attribute("device" "HEADER8")
 	Attribute("manufacturer" "unknown")
@@ -948,7 +948,7 @@ Element["" "0603" "R1" "5.6K" 600.00mil 300.00mil -104.73mil -31.50mil 0 100 ""]
 
 	)
 
-Element["" "DIP8" "U1" "unknown" 525.00mil 1000.00mil -50.00mil -400.00mil 0 100 ""]
+Element["" "DIP8" "U1" "unknown" 525.00mil 1000.00mil -50.00mil -425.00mil 0 100 ""]
 (
 	Attribute("device" "ATtiny25_45_85")
 	Attribute("manufacturer" "unknown")
@@ -1037,7 +1037,7 @@ Layer(1 "top")
 	Line[400.00mil 900.00mil 400.00mil 839.00mil 10.00mil 20.00mil "clearline"]
 	Line[400.00mil 839.00mil 402.00mil 837.00mil 10.00mil 20.00mil "clearline"]
 	Line[298.00mil 837.00mil 298.00mil 873.00mil 10.00mil 20.00mil "clearline"]
-	Line[298.00mil 873.00mil 475.00mil 1050.00mil 10.00mil 20.00mil "clearline"]
+	Line[296.00mil 871.00mil 475.00mil 1050.00mil 10.00mil 20.00mil "clearline"]
 	Line[475.00mil 1050.00mil 675.00mil 1050.00mil 10.00mil 20.00mil "clearline"]
 	Line[675.00mil 1050.00mil 725.00mil 1000.00mil 10.00mil 20.00mil "clearline"]
 )
@@ -1062,7 +1062,7 @@ Layer(3 "silk")
 )
 Layer(4 "silk")
 (
-	Text[150.00mil 925.00mil 0 80 "TH Sensor" "clearline"]
+	Text[150.00mil 925.00mil 0 80 "TH SENSOR" "clearline"]
 	Text[150.00mil 975.00mil 0 80 "SENSOR_VER1" "clearline"]
 	Text[150.00mil 1025.00mil 0 80 "SENSOR_VER2" "clearline"]
 )
