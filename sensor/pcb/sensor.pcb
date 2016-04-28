@@ -3,7 +3,7 @@
 # To read pcb files, the pcb version (or the git source date) must be >= the file version
 FileVersion[20091103]
 
-PCB["" 900.00mil 1075.00mil]
+PCB["" 900.00mil 1175.00mil]
 
 Grid[2500.000000 0.0000 0.0000 1]
 PolyArea[200000000.000000]
@@ -787,8 +787,8 @@ Symbol['~' 12.00mil]
 )
 Attribute("PCB::grid::unit" "mil")
 Attribute("PCB::grid::size" "25.00mil")
-Via[75.00mil 1000.00mil 145.00mil 20.00mil 0.0000 85.00mil "" ""]
 Via[400.00mil 900.00mil 46.00mil 20.00mil 0.0000 20.00mil "" "auto"]
+Via[150.00mil 1025.00mil 6.0000mm 20.00mil 0.0000 3.0000mm "" ""]
 
 Element["" "JUMPER2" "J1" "unknown" 75.00mil 825.00mil -50.00mil 50.00mil 0 100 ""]
 (
@@ -1060,9 +1060,8 @@ Layer(3 "silk")
 )
 Layer(4 "silk")
 (
-	Text[150.00mil 925.00mil 0 80 "TH SENSOR" "clearline"]
-	Text[150.00mil 975.00mil 0 80 "SENSOR_VER1" "clearline"]
-	Text[150.00mil 1025.00mil 0 80 "SENSOR_VER2" "clearline"]
+	Text[270.00mil 1125.00mil 0 80 "SENSOR_FULLVER" "clearline"]
+	Text[270.00mil 1075.00mil 0 80 "TH SENSOR" "clearline"]
 )
 NetList()
 (
