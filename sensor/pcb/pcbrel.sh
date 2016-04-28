@@ -9,7 +9,11 @@ ZIPFILE="$(pwd)/sensor-$V.zip"
 TMP=$(mktemp -d)
 rm -f "$ZIPFILE"
 
-sed -e "s/SENSOR_VER1/$V1/g" -e "s/SENSOR_VER2/$V2/g" sensor.pcb > "$TMP/sensor.pcb"
+sed \
+	-e "s/SENSOR_FULLVER/$V/g" \
+	-e "s/SENSOR_VER1/$V1/g" \
+	-e "s/SENSOR_VER2/$V2/g" \
+	sensor.pcb > "$TMP/sensor.pcb"
 cd "$TMP"
 pcb -x gerber --gerberfile sensor sensor.pcb
 zip -q9 "$ZIPFILE" sensor*
