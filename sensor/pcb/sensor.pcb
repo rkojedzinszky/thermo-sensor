@@ -797,8 +797,8 @@ Element["" "JUMPER2" "J1" "unknown" 75.00mil 825.00mil -50.00mil 50.00mil 0 100 
 	Attribute("manufacturer_part_number" "unknown")
 	Attribute("vendor" "unknown")
 	Attribute("vendor_part_number" "unknown")
-	Pin[0.0000 0.0000 60.00mil 30.00mil 66.00mil 28.00mil "1" "1" "square,edge2"]
-	Pin[100.00mil 0.0000 60.00mil 30.00mil 66.00mil 28.00mil "2" "2" "edge2"]
+	Pin[0.0000 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "1" "1" "square,edge2"]
+	Pin[100.00mil 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "2" "2" "edge2"]
 	ElementLine [-50.00mil 50.00mil 150.00mil 50.00mil 10.00mil]
 	ElementLine [150.00mil -50.00mil 150.00mil 50.00mil 10.00mil]
 	ElementLine [-50.00mil -50.00mil 150.00mil -50.00mil 10.00mil]
@@ -919,14 +919,14 @@ Element["" "HEADER8_2" "H1" "unknown" 825.00mil 400.00mil 0.0000 150.00mil 0 100
 	Attribute("manufacturer_part_number" "unknown")
 	Attribute("vendor" "unknown")
 	Attribute("vendor_part_number" "unknown")
-	Pin[0.0000 0.0000 60.00mil 30.00mil 66.00mil 38.00mil "1" "1" "square,edge2"]
-	Pin[0.0000 100.00mil 60.00mil 30.00mil 66.00mil 38.00mil "2" "2" "edge2"]
-	Pin[-100.00mil 0.0000 60.00mil 30.00mil 66.00mil 38.00mil "3" "3" "edge2"]
-	Pin[-100.00mil 100.00mil 60.00mil 30.00mil 66.00mil 38.00mil "4" "4" "edge2"]
-	Pin[-200.00mil 0.0000 60.00mil 30.00mil 66.00mil 38.00mil "5" "5" "edge2"]
-	Pin[-200.00mil 100.00mil 60.00mil 30.00mil 66.00mil 38.00mil "6" "6" "edge2"]
-	Pin[-300.00mil 0.0000 60.00mil 30.00mil 66.00mil 38.00mil "7" "7" "edge2"]
-	Pin[-300.00mil 100.00mil 60.00mil 30.00mil 66.00mil 38.00mil "8" "8" "edge2"]
+	Pin[0.0000 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "1" "1" "square,edge2"]
+	Pin[0.0000 100.00mil 60.00mil 30.00mil 66.00mil 35.00mil "2" "2" "edge2"]
+	Pin[-100.00mil 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "3" "3" "edge2"]
+	Pin[-100.00mil 100.00mil 60.00mil 30.00mil 66.00mil 35.00mil "4" "4" "edge2"]
+	Pin[-200.00mil 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "5" "5" "edge2"]
+	Pin[-200.00mil 100.00mil 60.00mil 30.00mil 66.00mil 35.00mil "6" "6" "edge2"]
+	Pin[-300.00mil 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "7" "7" "edge2"]
+	Pin[-300.00mil 100.00mil 60.00mil 30.00mil 66.00mil 35.00mil "8" "8" "edge2"]
 	ElementLine [-350.00mil -50.00mil 50.00mil -50.00mil 10.00mil]
 	ElementLine [-350.00mil -50.00mil -350.00mil 150.00mil 10.00mil]
 	ElementLine [-350.00mil 150.00mil 50.00mil 150.00mil 10.00mil]
@@ -955,14 +955,14 @@ Element["" "DIP8" "U1" "unknown" 525.00mil 1000.00mil -50.00mil -425.00mil 0 100
 	Attribute("manufacturer_part_number" "unknown")
 	Attribute("vendor" "unknown")
 	Attribute("vendor_part_number" "unknown")
-	Pin[0.0000 0.0000 60.00mil 30.00mil 66.00mil 28.00mil "PB5 (PCINT5/_Reset_/ADC0/dW)" "1" "square,edge2"]
-	Pin[100.00mil 0.0000 60.00mil 30.00mil 66.00mil 28.00mil "(PCINT3/XTAL1/CLKI/_OC1B_/ADC3) PB3" "2" "edge2"]
-	Pin[200.00mil 0.0000 60.00mil 30.00mil 66.00mil 28.00mil "(PCINT4/XTAL2/CLKO/OC1B/ADC2) PB4" "3" "edge2"]
-	Pin[300.00mil 0.0000 60.00mil 30.00mil 66.00mil 28.00mil "4" "4" "edge2"]
-	Pin[300.00mil -300.00mil 60.00mil 30.00mil 66.00mil 28.00mil "(MOSI/DI/SDA/AIN0/OC0A/_OC1A_/AREF/PCINT0) PB0" "5" "edge2"]
-	Pin[200.00mil -300.00mil 60.00mil 30.00mil 66.00mil 28.00mil "(MISO/DO/AIN1/OC0B/OC1A/PCINT1) PB1" "6" "edge2"]
-	Pin[100.00mil -300.00mil 60.00mil 30.00mil 66.00mil 28.00mil "(SCK/USCK/SCL/ADC1/T0/INT0/PCINT2) PB2" "7" "edge2"]
-	Pin[0.0000 -300.00mil 60.00mil 30.00mil 66.00mil 28.00mil "8" "8" "edge2"]
+	Pin[0.0000 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "PB5 (PCINT5/_Reset_/ADC0/dW)" "1" "square,edge2"]
+	Pin[100.00mil 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "(PCINT3/XTAL1/CLKI/_OC1B_/ADC3) PB3" "2" "edge2"]
+	Pin[200.00mil 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "(PCINT4/XTAL2/CLKO/OC1B/ADC2) PB4" "3" "edge2"]
+	Pin[300.00mil 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "4" "4" "edge2"]
+	Pin[300.00mil -300.00mil 60.00mil 30.00mil 66.00mil 35.00mil "(MOSI/DI/SDA/AIN0/OC0A/_OC1A_/AREF/PCINT0) PB0" "5" "edge2"]
+	Pin[200.00mil -300.00mil 60.00mil 30.00mil 66.00mil 35.00mil "(MISO/DO/AIN1/OC0B/OC1A/PCINT1) PB1" "6" "edge2"]
+	Pin[100.00mil -300.00mil 60.00mil 30.00mil 66.00mil 35.00mil "(SCK/USCK/SCL/ADC1/T0/INT0/PCINT2) PB2" "7" "edge2"]
+	Pin[0.0000 -300.00mil 60.00mil 30.00mil 66.00mil 35.00mil "8" "8" "edge2"]
 	ElementLine [-50.00mil 50.00mil 350.00mil 50.00mil 10.00mil]
 	ElementLine [350.00mil -350.00mil 350.00mil 50.00mil 10.00mil]
 	ElementLine [-50.00mil -350.00mil 350.00mil -350.00mil 10.00mil]
@@ -979,8 +979,8 @@ Element["" "JUMPER2" "J2" "unknown" 75.00mil 700.00mil -50.00mil -100.00mil 0 10
 	Attribute("manufacturer_part_number" "unknown")
 	Attribute("vendor" "unknown")
 	Attribute("vendor_part_number" "unknown")
-	Pin[0.0000 0.0000 60.00mil 30.00mil 66.00mil 28.00mil "1" "1" "square,edge2"]
-	Pin[100.00mil 0.0000 60.00mil 30.00mil 66.00mil 28.00mil "2" "2" "edge2"]
+	Pin[0.0000 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "1" "1" "square,edge2"]
+	Pin[100.00mil 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "2" "2" "edge2"]
 	ElementLine [-50.00mil 50.00mil 150.00mil 50.00mil 10.00mil]
 	ElementLine [150.00mil -50.00mil 150.00mil 50.00mil 10.00mil]
 	ElementLine [-50.00mil -50.00mil 150.00mil -50.00mil 10.00mil]
