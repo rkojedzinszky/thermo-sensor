@@ -1,6 +1,15 @@
 #include <avr/io.h>
+#include <avr/lock.h>
 #include <avr/interrupt.h>
 #include "sensor.hpp"
+
+FUSES = {
+	.low = LFUSE_DEFAULT,
+	.high = FUSE_EESAVE & FUSE_SPIEN,
+	.extended = EFUSE_DEFAULT,
+};
+
+LOCKBITS = LB_MODE_3;
 
 int main()
 {
