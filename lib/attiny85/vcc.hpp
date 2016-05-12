@@ -17,8 +17,8 @@ public:
 		TIM0_COMPAInterrupt::set(interrupt);
 		TCCR0A = 0;
 		TCNT0 = 0;
-		TCCR0B = _BV(CS01) | _BV(CS00);
-		OCR0A = 2;
+		TCCR0B = _BV(CS02) | _BV(CS00);
+		OCR0A = 1;
 		TIMSK |= _BV(OCIE0A);
 
 		while (!done_) {
