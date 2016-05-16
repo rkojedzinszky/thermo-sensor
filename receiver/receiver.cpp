@@ -108,10 +108,19 @@ static void receive_loop()
 	radio::release();
 	PCINT0Interrupt::set(receive);
 
+	set_sleep_mode(SLEEP_MODE_IDLE);
+
 	while(1) {
-		set_sleep_mode(SLEEP_MODE_IDLE);
-		sleep_mode();
-		PCINT0Interrupt::pending();
+		cli();
+		if (PCINT0Interrupt::fire_ == false) {
+			sleep_enable();
+			sei();
+			sleep_cpu();
+			sleep_disable();
+		} else {
+			sei();
+			PCINT0Interrupt::pending();
+		}
 	}
 }
 
