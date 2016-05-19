@@ -24,7 +24,8 @@ void Sensor::send()
 	packet.magic = magic_;
 	packet.len = dp - packet.raw;
 	packet.id = id_;
-	packet.seq = seq_++;
+	packet.seq = seq_;
+	seq_ = (seq_ + 1) & 0x7fffffff;
 
 	::aes128_enc(packet.raw, &aes_ctx_);
 

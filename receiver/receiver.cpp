@@ -74,7 +74,10 @@ static void receive()
 		radio::select();
 		unsigned char rxbytes = radio::status(CC1101::RXBYTES);
 		if (rxbytes == sizeof(Radiopacket_status)) {
-			Radiopacket_status packet;
+			struct Radiopacket_status_encoded : Radiopacket_status {
+				uint16_t extra[2];
+			};
+			Radiopacket_status_encoded packet;
 
 			radio::read_rxfifo(packet.raw, sizeof(Radiopacket_status));
 

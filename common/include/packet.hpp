@@ -6,13 +6,13 @@
 struct Radiopacket {
 	union {
 		struct {
-			unsigned short magic;
-			unsigned short seq;
-			unsigned char len;
-			unsigned char id;
-			unsigned char data[0];
+			uint16_t magic;
+			int32_t seq; // signed, but no negative values are allowed
+			uint8_t len;
+			uint8_t id;
+			uint8_t data[0];
 		} __attribute__ ((__packed__));
-		unsigned char raw[16];
+		uint8_t raw[16];
 	};
 };
 
