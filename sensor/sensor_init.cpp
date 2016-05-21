@@ -21,9 +21,20 @@ static uint16_t getseed()
 
 	WDTCR = 0;
 
-	uint16_t voltage = vcc.read_voltage();
+	uint16_t seed = TCNT0 << 8;
+	seed ^= vcc.read_voltage();
+	// read_voltage stops timer also
 
-	return voltage + TCNT0;
+	USICR = 0;
+	uint16_t d;
+	if (htu21d::read_temp(d)) {
+		seed ^= d;
+	}
+	if (htu21d::read_hum(d)) {
+		seed ^= (d << 8) | (d >> 8);
+	}
+
+	return seed;
 }
 
 static bool check_reset()
@@ -97,5 +108,6 @@ void Sensor::init()
 	::aes128_init(config.key(), &aes_ctx_);
 
 	lfsr.set(getseed() ^ (config.id() << 8));
+	seq_ = ((static_cast<uint32_t>(lfsr.get()) << 16) | lfsr.get()) & 0x7fffffff;
 }
 
