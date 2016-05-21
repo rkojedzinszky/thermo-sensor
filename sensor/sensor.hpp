@@ -26,7 +26,7 @@ public:
 private:
 	void send();
 
-	int32_t seq_ = 0;
+	int32_t seq_;
 	unsigned short magic_;
 	unsigned char id_;
 	aes128_ctx_t aes_ctx_;
