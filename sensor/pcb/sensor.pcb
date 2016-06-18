@@ -1036,19 +1036,8 @@ Layer(1 "top")
 )
 Layer(2 "bottom")
 (
-	Line[1350.00mil 1400.00mil 1350.00mil 1175.00mil 10.00mil 20.00mil "clearline"]
-	Line[1350.00mil 1175.00mil 1400.00mil 1125.00mil 10.00mil 20.00mil "clearline"]
-	Line[1400.00mil 1125.00mil 1400.00mil 1050.00mil 10.00mil 20.00mil "clearline"]
-	Line[1400.00mil 1050.00mil 1300.00mil 950.00mil 10.00mil 20.00mil "clearline"]
-	Line[1300.00mil 950.00mil 1300.00mil 850.00mil 10.00mil 20.00mil "clearline"]
-	Line[1300.00mil 850.00mil 1350.00mil 800.00mil 10.00mil 20.00mil "clearline"]
 	Line[1550.00mil 1100.00mil 1550.00mil 1000.00mil 10.00mil 20.00mil "clearline"]
 	Line[1550.00mil 1000.00mil 1450.00mil 900.00mil 10.00mil 20.00mil "clearline"]
-	Line[1550.00mil 1400.00mil 1500.00mil 1350.00mil 10.00mil 20.00mil "clearline"]
-	Line[1500.00mil 1350.00mil 1500.00mil 1050.00mil 10.00mil 20.00mil "clearline"]
-	Line[1500.00mil 1050.00mil 1400.00mil 950.00mil 10.00mil 20.00mil "clearline"]
-	Line[1400.00mil 950.00mil 1400.00mil 750.00mil 10.00mil 20.00mil "clearline"]
-	Line[1400.00mil 750.00mil 1450.00mil 700.00mil 10.00mil 20.00mil "clearline"]
 	Line[1450.00mil 600.00mil 1450.00mil 604.00mil 25.00mil 20.00mil "clearline"]
 	Line[1450.00mil 600.00mil 1725.00mil 875.00mil 25.00mil 20.00mil "clearline"]
 	Line[1725.00mil 875.00mil 1725.00mil 1325.00mil 25.00mil 20.00mil "clearline"]
@@ -1063,6 +1052,12 @@ Layer(2 "bottom")
 	Line[26.5900mm 600.00mil 22.7800mm 750.00mil 40.00mil 20.00mil "clearline"]
 	Line[1350.00mil 1100.00mil 31.6700mm 1100.00mil 40.00mil 20.00mil "clearline"]
 	Line[31.6700mm 1100.00mil 22.7800mm 750.00mil 40.00mil 20.00mil "clearline"]
+	Line[1450.00mil 700.00mil 1600.00mil 850.00mil 10.00mil 20.00mil "clearline"]
+	Line[1600.00mil 850.00mil 1600.00mil 1350.00mil 10.00mil 20.00mil "clearline"]
+	Line[1600.00mil 1350.00mil 1550.00mil 1400.00mil 10.00mil 20.00mil "clearline"]
+	Line[1350.00mil 800.00mil 1400.00mil 850.00mil 10.00mil 20.00mil "clearline"]
+	Line[1400.00mil 850.00mil 1400.00mil 1350.00mil 10.00mil 20.00mil "clearline"]
+	Line[1400.00mil 1350.00mil 1350.00mil 1400.00mil 10.00mil 20.00mil "clearline"]
 )
 Layer(3 "silk")
 (
