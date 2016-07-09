@@ -5,7 +5,7 @@
 
 FUSES = {
 	.low = LFUSE_DEFAULT,
-	.high = FUSE_EESAVE & FUSE_SPIEN,
+	.high = HFUSE_DEFAULT,
 	.extended = EFUSE_DEFAULT,
 };
 
