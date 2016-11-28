@@ -43,6 +43,11 @@ public:
 	void invalidate() {
 		eeprom_write_byte(&config_.crc8, calculate_crc() ^ 0xff);
 	}
+	void invalidate_id() {
+		id() = 0xff;
+		write();
+		invalidate();
+	}
 
 private:
 	uint8_t calculate_crc() const {
