@@ -75,7 +75,28 @@ void Sensor::init()
 		radio::wcmd(CC1101::SPWD);
 		radio::release();
 
+		wdt_reset();
+		WDTCR = _BV(WDIE) | _BV(WDP3);
+
+		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+		sei();
+		sleep_mode();
+		cli();
+
+		WDTCR = 0;
+
+		config.invalidate_id();
+
+		wdt_reset();
+		WDTCR = _BV(WDIE) | _BV(WDP2) | _BV(WDP1) | _BV(WDP0);
+		sei();
+
 		for (;;) {
+			radio::select();
+			radio::set(CC1101::IOCFG0, radio::get(CC1101::IOCFG0) ^ 0x40);
+			radio::wcmd(CC1101::SPWD);
+			radio::release();
+
 			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 			sleep_mode();
 		}
