@@ -790,24 +790,6 @@ Attribute("PCB::grid::size" "25.00mil")
 Via[400.00mil 900.00mil 46.00mil 20.00mil 0.0000 20.00mil "" "auto"]
 Via[150.00mil 1025.00mil 6.0000mm 20.00mil 0.0000 3.0000mm "" ""]
 
-Element["" "JUMPER2" "J1" "unknown" 75.00mil 825.00mil -50.00mil 50.00mil 0 100 ""]
-(
-	Attribute("device" "JUMPER")
-	Attribute("manufacturer" "unknown")
-	Attribute("manufacturer_part_number" "unknown")
-	Attribute("vendor" "unknown")
-	Attribute("vendor_part_number" "unknown")
-	Pin[0.0000 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "1" "1" "square,edge2"]
-	Pin[100.00mil 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "2" "2" "edge2"]
-	ElementLine [-50.00mil 50.00mil 150.00mil 50.00mil 10.00mil]
-	ElementLine [150.00mil -50.00mil 150.00mil 50.00mil 10.00mil]
-	ElementLine [-50.00mil -50.00mil 150.00mil -50.00mil 10.00mil]
-	ElementLine [-50.00mil -50.00mil -50.00mil 50.00mil 10.00mil]
-	ElementLine [50.00mil -50.00mil 50.00mil 50.00mil 10.00mil]
-	ElementLine [-50.00mil -50.00mil 50.00mil -50.00mil 10.00mil]
-
-	)
-
 Element["" "0603" "C1" "unknown" 350.00mil 700.00mil 44.09mil -31.50mil 0 100 ""]
 (
 	Attribute("device" "CAPACITOR")
@@ -989,6 +971,24 @@ Element["" "JUMPER2" "J2" "unknown" 75.00mil 700.00mil -50.00mil -100.00mil 0 10
 	ElementLine [-50.00mil -50.00mil 50.00mil -50.00mil 10.00mil]
 
 	)
+
+Element["" "JUMPER2" "J1" "unknown" 75.00mil 800.00mil -50.00mil 50.00mil 0 100 ""]
+(
+	Attribute("device" "JUMPER")
+	Attribute("manufacturer" "unknown")
+	Attribute("manufacturer_part_number" "unknown")
+	Attribute("vendor" "unknown")
+	Attribute("vendor_part_number" "unknown")
+	Pin[0.0000 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "1" "1" "square,edge2"]
+	Pin[100.00mil 0.0000 60.00mil 30.00mil 66.00mil 35.00mil "2" "2" "edge2"]
+	ElementLine [-50.00mil 50.00mil 150.00mil 50.00mil 10.00mil]
+	ElementLine [150.00mil -50.00mil 150.00mil 50.00mil 10.00mil]
+	ElementLine [-50.00mil -50.00mil 150.00mil -50.00mil 10.00mil]
+	ElementLine [-50.00mil -50.00mil -50.00mil 50.00mil 10.00mil]
+	ElementLine [50.00mil -50.00mil 50.00mil 50.00mil 10.00mil]
+	ElementLine [-50.00mil -50.00mil 50.00mil -50.00mil 10.00mil]
+
+	)
 Layer(1 "top")
 (
 	Line[450.00mil 200.00mil 6.0400mm 10.4700mm 25.00mil 20.00mil "clearline"]
@@ -1025,10 +1025,6 @@ Layer(1 "top")
 	Line[100.00mil 150.59mil 100.00mil 450.00mil 25.00mil 20.00mil "clearline"]
 	Line[75.00mil 700.00mil 75.00mil 475.00mil 25.00mil 20.00mil "clearline"]
 	Line[75.00mil 475.00mil 100.00mil 450.00mil 25.00mil 20.00mil "clearline"]
-	Line[324.41mil 650.00mil 150.00mil 650.00mil 10.00mil 20.00mil "clearline"]
-	Line[150.00mil 650.00mil 125.00mil 675.00mil 10.00mil 20.00mil "clearline"]
-	Line[125.00mil 675.00mil 125.00mil 775.00mil 10.00mil 20.00mil "clearline"]
-	Line[125.00mil 775.00mil 75.00mil 825.00mil 10.00mil 20.00mil "clearline"]
 	Line[400.00mil 900.00mil 400.00mil 839.00mil 10.00mil 20.00mil "clearline"]
 	Line[400.00mil 839.00mil 402.00mil 837.00mil 10.00mil 20.00mil "clearline"]
 	Line[725.00mil 1000.00mil 675.00mil 1050.00mil 10.00mil 20.00mil "clearline"]
@@ -1039,6 +1035,10 @@ Layer(1 "top")
 	Line[825.00mil 400.00mil 825.00mil 275.00mil 25.00mil 20.00mil "clearline"]
 	Line[825.00mil 275.00mil 750.00mil 200.00mil 25.00mil 20.00mil "clearline"]
 	Line[750.00mil 200.00mil 450.00mil 200.00mil 25.00mil 20.00mil "clearline"]
+	Line[75.00mil 800.00mil 125.00mil 750.00mil 10.00mil 20.00mil "clearline"]
+	Line[125.00mil 750.00mil 125.00mil 675.00mil 10.00mil 20.00mil "clearline"]
+	Line[125.00mil 675.00mil 150.00mil 650.00mil 10.00mil 20.00mil "clearline"]
+	Line[150.00mil 650.00mil 324.41mil 650.00mil 10.00mil 20.00mil "clearline"]
 )
 Layer(2 "bottom")
 (
@@ -1046,14 +1046,14 @@ Layer(2 "bottom")
 	Line[625.00mil 600.00mil 725.00mil 600.00mil 25.00mil 20.00mil "clearline"]
 	Line[725.00mil 600.00mil 825.00mil 500.00mil 25.00mil 20.00mil "clearline"]
 	Line[175.00mil 700.00mil 525.00mil 700.00mil 25.00mil 20.00mil "clearline"]
-	Line[175.00mil 825.00mil 250.00mil 900.00mil 10.00mil 20.00mil "clearline"]
-	Line[250.00mil 900.00mil 525.00mil 900.00mil 10.00mil 20.00mil "clearline"]
 	Line[525.00mil 900.00mil 725.00mil 700.00mil 10.00mil 20.00mil "clearline"]
 	Line[525.00mil 500.00mil 575.00mil 450.00mil 10.00mil 20.00mil "clearline"]
 	Line[575.00mil 450.00mil 850.00mil 450.00mil 10.00mil 20.00mil "clearline"]
 	Line[850.00mil 450.00mil 875.00mil 475.00mil 10.00mil 20.00mil "clearline"]
 	Line[875.00mil 475.00mil 875.00mil 750.00mil 10.00mil 20.00mil "clearline"]
 	Line[875.00mil 750.00mil 625.00mil 1000.00mil 10.00mil 20.00mil "clearline"]
+	Line[525.00mil 900.00mil 275.00mil 900.00mil 10.00mil 20.00mil "clearline"]
+	Line[275.00mil 900.00mil 175.00mil 800.00mil 10.00mil 20.00mil "clearline"]
 )
 Layer(3 "silk")
 (
