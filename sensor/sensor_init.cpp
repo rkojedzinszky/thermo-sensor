@@ -39,24 +39,13 @@ static uint16_t getseed()
 
 static bool check_reset()
 {
-	radio::USI::DO::mode(INPUT);
-	radio::USI::DO::set();
-	radio::USI::USCK::mode(OUTPUT);
-	radio::USI::USCK::clear();
-
-	_NOP();
-
-	bool ret = radio::USI::DO::is_clear();
-
-	radio::USI::USCK::mode(INPUT);
-	radio::USI::USCK::set();
-
-	return ret;
+	return reset::is_clear();
 }
 
 void Sensor::init()
 {
-	htu21d::reset();
+	htu21d::CL::set();
+	htu21d::DA::set();
 
 	Config config;
 	config.read();
@@ -75,20 +64,22 @@ void Sensor::init()
 		radio::wcmd(CC1101::SPWD);
 		radio::release();
 
-		wdt_reset();
-		WDTCR = _BV(WDIE) | _BV(WDP3);
+		{ // sleep for 4 seconds/*{{{*/
+			wdt_reset();
+			WDTCR = _BV(WDIE) | _BV(WDP3);
 
-		set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-		sei();
-		sleep_mode();
-		cli();
+			set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+			sei();
+			sleep_mode();
+			cli();
 
-		WDTCR = 0;
+			WDTCR = 0;
+		}/*}}}*/
 
 		config.invalidate_id();
 
 		wdt_reset();
-		WDTCR = _BV(WDIE) | _BV(WDP2) | _BV(WDP1) | _BV(WDP0);
+		WDTCR = _BV(WDIE) | _BV(WDP2) | _BV(WDP0); // blink every second
 		sei();
 
 		for (;;) {
@@ -102,8 +93,7 @@ void Sensor::init()
 		}
 	}
 
-	htu21d::CL::set();
-	htu21d::DA::set();
+	htu21d::reset();
 
 	radio::setup_basic();
 
