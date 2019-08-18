@@ -12,9 +12,12 @@ extern "C" {
 #include <radio.hpp>
 #include <htu21d.hpp>
 
-typedef HTU21D<Pin<Port<B>, 1>, Pin<Port<B>, 4>> htu21d;
+extern IHTU21D* htu21d;
 typedef Radio<CC1101::CC1101<USI, Pin<Port<B>, 3>>> radio;
-typedef htu21d::DA reset;
+
+// These two pins are used for bit-bang I2C too
+typedef Pin<Port<B>, 4> reset;
+typedef Pin<Port<B>, 1> reset_legacy;
 
 extern template class CC1101::CC1101<USI, Pin<Port<B>, 3>>;
 
