@@ -14,10 +14,10 @@ void Sensor::send()
 
 	USICR = 0;
 	uint16_t d;
-	if (htu21d->read_temp(d)) {
+	if (HTU21D::read_temp(d)) {
 		dp += SensorValue::HTU21DTemperature::encode(d, dp);
 	}
-	if (htu21d->read_hum(d)) {
+	if (HTU21D::read_hum(d)) {
 		dp += SensorValue::HTU21DHumidty::encode(d, dp);
 	}
 

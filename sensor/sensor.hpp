@@ -12,7 +12,6 @@ extern "C" {
 #include <radio.hpp>
 #include <htu21d.hpp>
 
-extern IHTU21D* htu21d;
 typedef Radio<CC1101::CC1101<USI, Pin<Port<B>, 3>>> radio;
 
 // These two pins are used for bit-bang I2C too
@@ -28,6 +27,8 @@ public:
 	void loop();
 
 private:
+	uint16_t getseed();
+	void detect_htu21d();
 	void send();
 
 	int32_t seq_;

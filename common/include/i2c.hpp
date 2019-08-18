@@ -42,29 +42,43 @@ inline bool I2CW<P_t>::is_clear()
 	return P::is_clear();
 }
 
+// I2C bit-bang interface
+class I2CI {
+public:
+	virtual void start() = 0;
+	virtual void stop() = 0;
+	virtual bool send_byte(uint8_t data) = 0;
+	virtual uint8_t recv_byte(bool nack = false) = 0;
+	virtual uint8_t CLpin() const = 0;
+	virtual void CLset() = 0;
+};
+
 template <typename CL_t, typename DA_t>
-class I2C {
+class I2C : public I2CI {
 public:
 	typedef I2CW<CL_t> CL;
 	typedef I2CW<DA_t> DA;
 
-	static void start();
-	static void stop();
+	virtual void start();
+	virtual void stop();
+	virtual bool send_byte(uint8_t data);
+	virtual uint8_t recv_byte(bool nack = false);
+	virtual uint8_t CLpin() const;
+	virtual void CLset();
+private:
 	static void send_bit(bool bit);
 	static bool recv_bit();
-	static bool send_byte(uint8_t data);
-	static uint8_t recv_byte(bool nack = false);
 };
 
 template <typename CL_t, typename DA_t>
-inline void I2C<CL_t, DA_t>::start()
+void I2C<CL_t, DA_t>::start()
 {
 	DA::clear();
 	CL::clear();
 }
 
 template <typename CL_t, typename DA_t>
-inline void I2C<CL_t, DA_t>::stop()
+void I2C<CL_t, DA_t>::stop()
 {
 	DA::clear();
 	CL::set();
@@ -127,4 +141,16 @@ uint8_t I2C<CL_t, DA_t>::recv_byte(bool nack)
 	send_bit(nack);
 
 	return data;
+}
+
+template <typename CL_t, typename DA_t>
+uint8_t I2C<CL_t, DA_t>::CLpin() const
+{
+	return CL_t::pin;
+}
+
+template <typename CL_t, typename DA_t>
+void I2C<CL_t, DA_t>::CLset()
+{
+	CL::set();
 }

@@ -7,7 +7,12 @@
 #include "sensor.hpp"
 #include "autoconfig.hpp"
 
-static uint16_t getseed()
+static bool check_reset()
+{
+	return reset::is_clear() || reset_legacy::is_clear();
+}
+
+uint16_t Sensor::getseed()
 {
 	VCC vcc;
 
@@ -27,59 +32,34 @@ static uint16_t getseed()
 
 	USICR = 0;
 	uint16_t d;
-	if (htu21d->read_temp(d)) {
+	if (HTU21D::read_temp(d)) {
 		seed ^= d;
 	}
-	if (htu21d->read_hum(d)) {
+	if (HTU21D::read_hum(d)) {
 		seed ^= (d << 8) | (d >> 8);
 	}
 
 	return seed;
 }
 
-static bool check_reset()
+void Sensor::detect_htu21d()
 {
-	return reset::is_clear() || reset_legacy::is_clear();
-}
-
-class HTU21D_dummy : public IHTU21D {
-public:
-	virtual bool reset();
-	virtual bool read_temp(uint16_t& temp);
-	virtual bool read_hum(uint16_t& hum);
-};
-
-bool HTU21D_dummy::reset()
-{
-	return false;
-}
-
-bool HTU21D_dummy::read_temp(uint16_t&)
-{
-	return false;
-}
-
-bool HTU21D_dummy::read_hum(uint16_t&)
-{
-	return false;
-}
-
-static IHTU21D* detect_htu21d()
-{
-	static HTU21D<Pin<Port<B>, 1>, Pin<Port<B>, 4>> htu21d_;
-	static HTU21D<Pin<Port<B>, 4>, Pin<Port<B>, 1>> htu21d_legacy_;
-	static HTU21D_dummy htu21d_dummy_;
+	static I2C<Pin<Port<B>, 1>, Pin<Port<B>, 4>> i2c;
+	static I2C<Pin<Port<B>, 4>, Pin<Port<B>, 1>> i2c_legacy;
 
 	// These two pins are used for bit-bang I2C too
 	Pin<Port<B>, 1>::set();
 	Pin<Port<B>, 4>::set();
 
-	if (htu21d_.reset())
-		return &htu21d_;
-	if (htu21d_legacy_.reset())
-		return &htu21d_legacy_;
+	HTU21D::seti2c(&i2c);
+	if (HTU21D::reset())
+		return;
 
-	return &htu21d_dummy_;
+	HTU21D::seti2c(&i2c_legacy);
+	if (HTU21D::reset())
+		return;
+
+	HTU21D::seti2c(0);
 }
 
 void Sensor::init()
@@ -133,7 +113,7 @@ void Sensor::init()
 		}
 	}
 
-	htu21d = detect_htu21d();
+	detect_htu21d();
 
 	radio::setup_basic();
 

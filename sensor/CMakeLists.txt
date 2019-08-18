@@ -8,5 +8,6 @@ add_executable(sensor main.cpp
 	sensor_send.cpp
 	sensor_loop.cpp
 	autoconfig.cpp
+	../common/src/htu21d.cpp
 	)
 target_link_libraries(sensor "${MCU}" ${AVR_CRYPTO_LIB_NAME})
