@@ -47,7 +47,7 @@ bool HTU21D<CL_t, DA_t>::reset()
 }
 
 template <typename CL_t, typename DA_t>
-inline bool HTU21D<CL_t, DA_t>::read_temp(uint16_t& temp)
+bool HTU21D<CL_t, DA_t>::read_temp(uint16_t& temp)
 {
 	bool ret;
 
@@ -64,7 +64,7 @@ inline bool HTU21D<CL_t, DA_t>::read_temp(uint16_t& temp)
 }
 
 template <typename CL_t, typename DA_t>
-inline bool HTU21D<CL_t, DA_t>::read_hum(uint16_t& hum)
+bool HTU21D<CL_t, DA_t>::read_hum(uint16_t& hum)
 {
 	bool ret;
 
@@ -81,7 +81,7 @@ inline bool HTU21D<CL_t, DA_t>::read_hum(uint16_t& hum)
 }
 
 template <typename CL_t, typename DA_t>
-bool HTU21D<CL_t, DA_t>::_reset()
+inline bool HTU21D<CL_t, DA_t>::_reset()
 {
 	if (!i2c::send_byte(0x80))
 		return false;
