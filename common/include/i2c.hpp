@@ -26,8 +26,8 @@ inline void I2CW<P_t>::set()
 template <typename P_t>
 inline void I2CW<P_t>::clear()
 {
-	P::clear();
 	P::mode(OUTPUT);
+	P::clear();
 }
 
 template <typename P_t>
