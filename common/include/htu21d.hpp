@@ -11,16 +11,23 @@
 // high - output/high
 // input - input will pull-up
 
+class IHTU21D {
+public:
+	virtual bool reset() = 0;
+	virtual bool read_temp(uint16_t& temp) = 0;
+	virtual bool read_hum(uint16_t& hum) = 0;
+};
+
 template <typename CL_t, typename DA_t>
-class HTU21D {
+class HTU21D : public IHTU21D {
 public:
 	typedef CL_t CL;
 	typedef DA_t DA;
 	typedef I2C<CL_t, DA_t> i2c;
 
-	static bool reset();
-	static bool read_temp(uint16_t& temp);
-	static bool read_hum(uint16_t& hum);
+	virtual bool reset();
+	virtual bool read_temp(uint16_t& temp);
+	virtual bool read_hum(uint16_t& hum);
 
 private:
 	static bool _reset();
@@ -30,6 +37,8 @@ private:
 template <typename CL_t, typename DA_t>
 bool HTU21D<CL_t, DA_t>::reset()
 {
+	i2c::start();
+	i2c::stop();
 	i2c::start();
 	bool ret = _reset();
 	i2c::stop();

@@ -34,8 +34,8 @@ static uint8_t gen_id()
 	TCCR0B = 0;
 
 	USICR = 0;
-	htu21d::read_temp(data.ttemp);
-	htu21d::read_hum(data.thum);
+	htu21d->read_temp(data.ttemp);
+	htu21d->read_hum(data.thum);
 	data.vcc = vccreader.read_voltage();
 
 	WDTInterrupt::fire_ = false;
