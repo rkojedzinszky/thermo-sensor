@@ -52,11 +52,11 @@ void Sensor::detect_htu21d()
 	Pin<Port<B>, 4>::set();
 
 	HTU21D::seti2c(&i2c);
-	if (HTU21D::reset())
+	if (HTU21D::reset() || HTU21D::reset())
 		return;
 
 	HTU21D::seti2c(&i2c_legacy);
-	if (HTU21D::reset())
+	if (HTU21D::reset() || HTU21D::reset())
 		return;
 
 	HTU21D::seti2c(0);
