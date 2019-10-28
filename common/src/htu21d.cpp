@@ -65,23 +65,17 @@ bool HTU21D::read_hum(uint16_t& hum)
 
 bool HTU21D::_reset()
 {
-	if (!i2c->send_byte(0x80))
-		return false;
+	static uint8_t wruserreg[] = {0x80, 0xe6, 0x02};
 
-	if (!i2c->send_byte(0xe6))
-		return false;
-
-	if (!i2c->send_byte(0x02))
+	if (!i2c->send_bytes(wruserreg, 3))
 		return false;
 
 	i2c->stop();
 	_NOP();
 	i2c->start();
 
-	if (!i2c->send_byte(0x80))
-		return false;
-
-	if (!i2c->send_byte(0xfe))
+	static uint8_t softreset[] = {0x80, 0xfe};
+	if (!i2c->send_bytes(softreset, 2))
 		return false;
 
 	return true;
@@ -89,17 +83,17 @@ bool HTU21D::_reset()
 
 bool HTU21D::_read(uint8_t cmd, uint16_t& m)
 {
-	if (!i2c->send_byte(0x80))
-		return false;
+	uint8_t readcmd[2] = {0x80, cmd};
 
-	if (!i2c->send_byte(cmd))
+	if (!i2c->send_bytes(readcmd, 2))
 		return false;
 
 	i2c->stop();
 	_NOP();
 	i2c->start();
 
-	if (!i2c->send_byte(0x81))
+	readcmd[0] = 0x81;
+	if (!i2c->send_bytes(readcmd, 1))
 		return false;
 
 	i2c->CLset();
@@ -113,9 +107,7 @@ bool HTU21D::_read(uint8_t cmd, uint16_t& m)
 
 	uint8_t buf[3];
 
-	buf[0] = i2c->recv_byte();
-	buf[1] = i2c->recv_byte();
-	buf[2] = i2c->recv_byte(true);
+	i2c->recv_bytes(buf, 3);
 
 	if (crc8_dallas(0, buf, 2) != buf[2])
 		return false;
