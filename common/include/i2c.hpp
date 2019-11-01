@@ -42,29 +42,43 @@ inline bool I2CW<P_t>::is_clear()
 	return P::is_clear();
 }
 
+// I2C bit-bang interface
+class I2CI {
+public:
+	virtual void start() = 0;
+	virtual void stop() = 0;
+	virtual bool send_bytes(uint8_t data[], uint8_t cnt) = 0;
+	virtual void recv_bytes(uint8_t data[], uint8_t cnt) = 0;
+	virtual uint8_t CLpin() const = 0;
+	virtual void CLset() = 0;
+};
+
 template <typename CL_t, typename DA_t>
-class I2C {
+class I2C : public I2CI {
 public:
 	typedef I2CW<CL_t> CL;
 	typedef I2CW<DA_t> DA;
 
-	static void start();
-	static void stop();
+	virtual void start();
+	virtual void stop();
+	virtual bool send_bytes(uint8_t data[], uint8_t cnt);
+	virtual void recv_bytes(uint8_t data[], uint8_t cnt);
+	virtual uint8_t CLpin() const;
+	virtual void CLset();
+private:
 	static void send_bit(bool bit);
 	static bool recv_bit();
-	static bool send_byte(uint8_t data);
-	static uint8_t recv_byte(bool nack = false);
 };
 
 template <typename CL_t, typename DA_t>
-inline void I2C<CL_t, DA_t>::start()
+void I2C<CL_t, DA_t>::start()
 {
 	DA::clear();
 	CL::clear();
 }
 
 template <typename CL_t, typename DA_t>
-inline void I2C<CL_t, DA_t>::stop()
+void I2C<CL_t, DA_t>::stop()
 {
 	DA::clear();
 	CL::set();
@@ -97,34 +111,54 @@ inline bool I2C<CL_t, DA_t>::recv_bit()
 }
 
 template <typename CL_t, typename DA_t>
-bool I2C<CL_t, DA_t>::send_byte(uint8_t data)
+bool I2C<CL_t, DA_t>::send_bytes(uint8_t* dp, uint8_t cnt)
 {
-	for (uint8_t i = 0; i < 8; ++i) {
-		send_bit(data & 0x80);
+	while (cnt-- > 0) {
+		uint8_t data = *dp++;
+		for (uint8_t i = 0; i < 8; ++i) {
+			send_bit(data & 0x80);
 
-		data += data;
+			data += data;
+		}
+
+		DA::set();
+
+		if (recv_bit() != false)
+			return false;
 	}
 
-	DA::set();
-
-	return recv_bit() == false;
+	return true;
 }
 
 template <typename CL_t, typename DA_t>
-uint8_t I2C<CL_t, DA_t>::recv_byte(bool nack)
+void I2C<CL_t, DA_t>::recv_bytes(uint8_t *dp, uint8_t cnt)
 {
-	uint8_t data;
+	while (cnt-- > 0) {
+		uint8_t data;
 
-	DA::set();
+		DA::set();
 
-	for (uint8_t i = 0; i < 8; ++i) {
-		data += data;
+		for (uint8_t i = 0; i < 8; ++i) {
+			data += data;
 
-		if (recv_bit())
-			data |= 1;
+			if (recv_bit())
+				data |= 1;
+		}
+
+		send_bit(cnt == 0);
+
+		*dp++ = data;
 	}
+}
 
-	send_bit(nack);
+template <typename CL_t, typename DA_t>
+uint8_t I2C<CL_t, DA_t>::CLpin() const
+{
+	return CL_t::pin;
+}
 
-	return data;
+template <typename CL_t, typename DA_t>
+void I2C<CL_t, DA_t>::CLset()
+{
+	CL::set();
 }
